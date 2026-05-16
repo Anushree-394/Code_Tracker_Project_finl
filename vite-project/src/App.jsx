@@ -23,6 +23,7 @@ import AptitudeQuiz from './components/dashboard/AptitudeQuiz'
 
 import Settings from './components/dashboard/Settings'
 import Notifications from './components/dashboard/Notifications'
+import ResumeAnalytics from './components/dashboard/ResumeAnalytics'
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -48,7 +49,7 @@ function App() {
     if (user?.uid) {
       const fetchProfile = async () => {
         try {
-          const res = await fetch(`http://localhost:5000/api/profile/${user.uid}`)
+          const res = await fetch(`http://localhost:5001/api/profile/${user.uid}`)
           if (res.ok) {
             const data = await res.json()
             setUserProfile(data || {})
@@ -67,7 +68,7 @@ function App() {
       if (user?.uid) {
         const fetchProfile = async () => {
           try {
-            const res = await fetch(`http://localhost:5000/api/profile/${user.uid}`)
+            const res = await fetch(`http://localhost:5001/api/profile/${user.uid}`)
             if (res.ok) {
               const data = await res.json()
               setUserProfile(data || {})
@@ -164,7 +165,7 @@ function App() {
 
           // Create basic profile in MongoDB
           try {
-            await fetch('http://localhost:5000/api/profile', {
+            await fetch('http://localhost:5001/api/profile', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -182,7 +183,7 @@ function App() {
 
           // Send welcome email via backend
           try {
-            await fetch('http://localhost:5000/api/auth/welcome-email', {
+            await fetch('http://localhost:5001/api/auth/welcome-email', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -354,6 +355,7 @@ function App() {
           <Route path="resources/companies" element={<Resources category="Companies" />} />
           <Route path="settings" element={<Settings />} />
           <Route path="notifications" element={<Notifications />} />
+          <Route path="analytics" element={<ResumeAnalytics />} />
         </Route>
       </Routes>
     </Router>
@@ -390,7 +392,7 @@ function LandingPage({ user, userProfile, showAuthModal, setShowAuthModal, authM
                 Platforms
               </a>
               <a href="#analytics" className="text-sm text-slate-300 hover:text-white">
-                Analytics
+                Resume Analytics
               </a>
               <a href="#pricing" className="text-sm text-slate-300 hover:text-white">
                 Pricing
@@ -489,13 +491,13 @@ function LandingPage({ user, userProfile, showAuthModal, setShowAuthModal, authM
                 >
                   Features
                 </a>
-                <a
-                  href="#analytics"
-                  className="rounded-lg px-2 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Analytics
-                </a>
+                  <a
+                    href="#analytics"
+                    className="rounded-lg px-2 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Resume Analytics
+                  </a>
                 <a
                   href="#activity"
                   className="rounded-lg px-2 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white"
@@ -733,7 +735,7 @@ function LandingPage({ user, userProfile, showAuthModal, setShowAuthModal, authM
         <section id="analytics" className="mx-auto max-w-6xl px-4 py-14">
           <div className="grid gap-6 md:grid-cols-3">
             <div className="md:col-span-1">
-              <div className="text-xs font-semibold tracking-wide text-slate-400">ANALYTICS</div>
+              <div className="text-xs font-semibold tracking-wide text-slate-400">RESUME ANALYTICS</div>
               <h2 className="mt-2 text-2xl font-semibold text-white md:text-3xl">
                 Know what to practice next
               </h2>
@@ -846,7 +848,7 @@ function LandingPage({ user, userProfile, showAuthModal, setShowAuthModal, authM
                 Platforms
               </a>
               <a className="text-slate-400 hover:text-white" href="#analytics">
-                Analytics
+                Resume Analytics
               </a>
               <a className="text-slate-400 hover:text-white" href="#pricing">
                 Pricing

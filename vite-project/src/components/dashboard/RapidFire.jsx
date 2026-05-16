@@ -53,7 +53,7 @@ const RapidFire = () => {
     const startQuiz = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/interview/generate-rapid-fire-questions', {
+            const response = await fetch('http://localhost:5001/api/interview/generate-rapid-fire-questions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -151,7 +151,7 @@ const RapidFire = () => {
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-amber-600/5 rounded-full blur-[120px] animate-pulse" />
                 <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[120px]" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] brightness-150" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('data:image/svg+xml,%3Csvg+viewBox%3D%220+0+200+200%22+xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter+id%3D%22noiseFilter%22%3E%3CfeTurbulence+type%3D%22fractalNoise%22+baseFrequency%3D%220.65%22+numOctaves%3D%223%22+stitchTiles%3D%22stitch%22%2F%3E%3C%2Ffilter%3E%3Crect+width%3D%22100%25%22+height%3D%22100%25%22+filter%3D%22url%28%23noiseFilter%29%22%2F%3E%3C%2Fsvg%3E')] opacity-[0.03] brightness-150" />
             </div>
 
             <div className="relative z-10 max-w-5xl mx-auto px-6 py-12">

@@ -146,7 +146,7 @@ const Dashboard = () => {
     React.useEffect(() => {
         const fetchContestCount = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/contests/upcoming-summary');
+                const response = await fetch('http://localhost:5001/api/contests/upcoming-summary');
                 const data = await response.json();
                 setUpcomingContestCount(data.totalCount || 0);
                 setTopUpcomingContests(data.topContests || []);
@@ -182,7 +182,7 @@ const Dashboard = () => {
     React.useEffect(() => {
         const fetchAllStats = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/profile');
+                const res = await fetch('http://localhost:5001/api/profile');
                 if (res.ok) {
                     const profiles = await res.json();
                     if (profiles && profiles.length > 0) {
@@ -195,7 +195,7 @@ const Dashboard = () => {
                         if (profile.leetcode) {
                             try {
                                 const handle = profile.leetcode.includes('leetcode.com') ? extractHandle(profile.leetcode) : profile.leetcode;
-                                const resp = await fetch(`http://localhost:5000/api/leetcode/${handle}`);
+                                const resp = await fetch(`http://localhost:5001/api/leetcode/${handle}`);
                                 if (resp.ok) {
                                     const data = await resp.json();
                                     solved += data.matchedUser?.submitStats?.acSubmissionNum[0]?.count || 0;
@@ -259,7 +259,7 @@ const Dashboard = () => {
                         if (profile.atcoder) {
                             try {
                                 const handle = profile.atcoder.includes('atcoder.jp') ? extractHandle(profile.atcoder) : profile.atcoder;
-                                const resp = await fetch(`http://localhost:5000/api/atcoder/submissions/${handle}`);
+                                const resp = await fetch(`http://localhost:5001/api/atcoder/submissions/${handle}`);
                                 if (resp.ok) {
                                     const data = await resp.json();
                                     const solvedAtCoder = new Set(

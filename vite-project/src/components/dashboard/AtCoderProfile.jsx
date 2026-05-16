@@ -31,7 +31,7 @@ const AtCoderProfile = () => {
     useEffect(() => {
         const loadSavedProfile = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/profile');
+                const res = await fetch('http://localhost:5001/api/profile');
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.length > 0 && data[0].atcoder) {
@@ -59,7 +59,7 @@ const AtCoderProfile = () => {
         
         try {
             // Fetch submissions from AtCoder API via proxy
-            const submissionsResponse = await fetch(`http://localhost:5000/api/atcoder/submissions/${user}`);
+            const submissionsResponse = await fetch(`http://localhost:5001/api/atcoder/submissions/${user}`);
             
             if (!submissionsResponse.ok) {
                 throw new Error('User not found or API error');
@@ -76,7 +76,7 @@ const AtCoderProfile = () => {
             setStats(stats);
             
             // Fetch user profile info via proxy
-            const userResponse = await fetch(`http://localhost:5000/api/atcoder/profile/${user}`);
+            const userResponse = await fetch(`http://localhost:5001/api/atcoder/profile/${user}`);
             if (userResponse.ok) {
                 setProfileData({ username: user });
             }

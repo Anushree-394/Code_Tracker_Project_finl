@@ -35,7 +35,7 @@ const LiveInterview = () => {
         console.log("Fetching new whiteboard problems from AI...");
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/interview/generate-whiteboard-problem', {
+            const response = await fetch('http://localhost:5001/api/interview/generate-whiteboard-problem', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ topic: 'Trees, Graphs, and System Design' })

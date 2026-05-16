@@ -10,7 +10,7 @@ export default function CodeChefProfile() {
     useEffect(() => {
         const loadSavedProfile = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/profile');
+                const res = await fetch('http://localhost:5001/api/profile');
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.length > 0 && data[0].codechef) {
@@ -43,7 +43,7 @@ export default function CodeChefProfile() {
         setHandle(userHandle)
 
         try {
-            const response = await fetch(`http://localhost:5000/api/codechef/${userHandle}`)
+            const response = await fetch(`http://localhost:5001/api/codechef/${userHandle}`)
 
             if (!response.ok) {
                 throw new Error('User not found or API error')

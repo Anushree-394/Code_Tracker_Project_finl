@@ -12,7 +12,7 @@ const Notifications = () => {
                 const allNotifications = [];
 
                 // 1. Fetch Upcoming Contests
-                const contestRes = await fetch('http://localhost:5000/api/contests/upcoming-summary');
+                const contestRes = await fetch('http://localhost:5001/api/contests/upcoming-summary');
                 if (contestRes.ok) {
                     const contestData = await contestRes.json();
                     const topContests = contestData.topContests || [];
@@ -38,7 +38,7 @@ const Notifications = () => {
                 }
 
                 // 2. Check Activity (Inactivity Reminders)
-                const profileRes = await fetch('http://localhost:5000/api/profile');
+                const profileRes = await fetch('http://localhost:5001/api/profile');
                 if (profileRes.ok) {
                     const profiles = await profileRes.json();
                     if (profiles && profiles.length > 0) {
@@ -60,7 +60,7 @@ const Notifications = () => {
 
                             try {
                                 if (plat.name === 'LeetCode') {
-                                    const res = await fetch(`http://localhost:5000/api/leetcode/${handle}`);
+                                    const res = await fetch(`http://localhost:5001/api/leetcode/${handle}`);
                                     if (res.ok) {
                                         const data = await res.json();
                                         if (data.recentSubmissionList?.[0]) {
@@ -76,7 +76,7 @@ const Notifications = () => {
                                         }
                                     }
                                 } else if (plat.name === 'AtCoder') {
-                                    const res = await fetch(`http://localhost:5000/api/atcoder/submissions/${handle}`);
+                                    const res = await fetch(`http://localhost:5001/api/atcoder/submissions/${handle}`);
                                     if (res.ok) {
                                         const data = await res.json();
                                         if (data?.[0]) {
@@ -84,7 +84,7 @@ const Notifications = () => {
                                         }
                                     }
                                 } else if (plat.name === 'CodeChef') {
-                                    const res = await fetch(`http://localhost:5000/api/codechef/${handle}`);
+                                    const res = await fetch(`http://localhost:5001/api/codechef/${handle}`);
                                     if (res.ok) {
                                         const data = await res.json();
                                         // CodeChef API might not give timestamp easily, but if we have solved count we can skip for now or use a placeholder

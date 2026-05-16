@@ -91,7 +91,7 @@ export default function Profile({ onBack }) {
     if (user?.uid) {
       const fetchProfile = async () => {
         try {
-          const res = await fetch(`http://localhost:5000/api/profile/${user.uid}`)
+          const res = await fetch(`http://localhost:5001/api/profile/${user.uid}`)
           if (res.ok) {
             const data = await res.json()
             if (data) {
@@ -134,7 +134,7 @@ export default function Profile({ onBack }) {
       }
 
       // For now, just save the profile without image upload
-      const response = await fetch('http://localhost:5000/api/profile', {
+      const response = await fetch('http://localhost:5001/api/profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

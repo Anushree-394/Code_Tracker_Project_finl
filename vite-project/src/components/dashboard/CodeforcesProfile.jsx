@@ -22,7 +22,7 @@ export default function CodeforcesProfile() {
     useEffect(() => {
         const loadSavedProfile = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/profile');
+                const res = await fetch('http://localhost:5001/api/profile');
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.length > 0 && data[0].codeforces) {

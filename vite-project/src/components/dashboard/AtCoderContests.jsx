@@ -91,7 +91,7 @@ const AtCoderContests = () => {
         const loadContests = async () => {
             try {
                 // Fetch from our local backend proxy to avoid CORS issues
-                const response = await fetch('http://localhost:5000/api/contests/atcoder');
+                const response = await fetch('http://localhost:5001/api/contests/atcoder');
                 if (!response.ok) throw new Error('Failed to fetch from backend');
                 const data = await response.json();
 

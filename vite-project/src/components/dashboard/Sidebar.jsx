@@ -128,7 +128,7 @@ const Sidebar = () => {
     useEffect(() => {
         const fetchAllData = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/profile');
+                const res = await fetch('http://localhost:5001/api/profile');
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.length > 0) {
@@ -140,7 +140,7 @@ const Sidebar = () => {
                         if (profile.leetcode) {
                             try {
                                 const handle = extractHandle(profile.leetcode);
-                                const resp = await fetch(`http://localhost:5000/api/leetcode/${handle}`);
+                                const resp = await fetch(`http://localhost:5001/api/leetcode/${handle}`);
                                 if (resp.ok) {
                                     const d = await resp.json();
                                     solved += d.matchedUser?.submitStats?.acSubmissionNum[0]?.count || 0;
@@ -151,7 +151,7 @@ const Sidebar = () => {
                         if (profile.codechef) {
                             try {
                                 const handle = extractHandle(profile.codechef);
-                                const resp = await fetch(`http://localhost:5000/api/codechef/${handle}`);
+                                const resp = await fetch(`http://localhost:5001/api/codechef/${handle}`);
                                 if (resp.ok) {
                                     const d = await resp.json();
                                     solved += parseInt(d.solvedCount) || 0;
@@ -265,7 +265,7 @@ const Sidebar = () => {
                         <SubNavItem label="Aptitude" to="/dashboard/resources/aptitude" />
                         <SubNavItem label="Companies" to="/dashboard/resources/companies" />
                     </NavItem>
-                    <NavItem icon={BarChart3} label="Analytics" to="/dashboard/analytics" />
+                    <NavItem icon={BarChart3} label="Resume Analytics" to="/dashboard/analytics" />
                     <NavItem icon={Target} label="Skill Gaps" to="/dashboard/skills" />
                     <NavItem icon={Bell} label="Notifications" to="/dashboard/notifications" />
                 </nav>

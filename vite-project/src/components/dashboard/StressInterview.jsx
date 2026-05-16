@@ -134,7 +134,7 @@ const StressInterview = () => {
         setError('');
         try {
             const roleName = roles.find(r => r.id === selectedRole)?.name || selectedRole;
-            const res = await fetch('http://localhost:5000/api/interview/generate-stress-questions', {
+            const res = await fetch('http://localhost:5001/api/interview/generate-stress-questions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ role: roleName }),
@@ -164,7 +164,7 @@ const StressInterview = () => {
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/5 blur-[120px] rounded-full" />
                 <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-500/5 blur-[120px] rounded-full" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('data:image/svg+xml,%3Csvg+viewBox%3D%220+0+200+200%22+xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter+id%3D%22noiseFilter%22%3E%3CfeTurbulence+type%3D%22fractalNoise%22+baseFrequency%3D%220.65%22+numOctaves%3D%223%22+stitchTiles%3D%22stitch%22%2F%3E%3C%2Ffilter%3E%3Crect+width%3D%22100%25%22+height%3D%22100%25%22+filter%3D%22url%28%23noiseFilter%29%22%2F%3E%3C%2Fsvg%3E')] opacity-20" />
             </div>
 
             <div className="relative z-10 mx-auto max-w-5xl px-6 py-12">
