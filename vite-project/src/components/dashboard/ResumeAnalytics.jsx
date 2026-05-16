@@ -106,9 +106,8 @@ const ResumeAnalytics = () => {
         <div className="min-h-screen bg-slate-950 text-slate-200 p-6 lg:p-10 relative overflow-hidden">
             {/* Background Decorations */}
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-fuchsia-500/10 rounded-full blur-[120px] animate-pulse" />
-                <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] animate-pulse" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('data:image/svg+xml,%3Csvg+viewBox%3D%220+0+200+200%22+xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter+id%3D%22noiseFilter%22%3E%3CfeTurbulence+type%3D%22fractalNoise%22+baseFrequency%3D%220.65%22+numOctaves%3D%223%22+stitchTiles%3D%22stitch%22%2F%3E%3C%2Ffilter%3E%3Crect+width%3D%22100%25%22+height%3D%22100%25%22+filter%3D%22url%28%23noiseFilter%29%22%2F%3E%3C%2Fsvg%3E')] opacity-[0.03] brightness-150" />
+                <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-fuchsia-500/10 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px]" />
             </div>
 
             <motion.div 
@@ -118,28 +117,18 @@ const ResumeAnalytics = () => {
                 className="relative z-10 max-w-7xl mx-auto"
             >
                 {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
                     <div>
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-sm font-black uppercase tracking-[0.3em] text-emerald-500">AI Neural Engine Active</span>
+                        <div className="flex items-center gap-2 mb-3">
+                            <Sparkles size={16} className="text-emerald-400" />
+                            <span className="text-sm font-semibold text-emerald-400">AI-Powered Analysis</span>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none mb-4">
-                            RESUME <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 via-emerald-400 to-cyan-400">ANALYTICS</span>
+                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                            Resume Analytics
                         </h1>
-                        <p className="text-lg text-slate-400 max-w-xl font-medium">
-                            Upload your resume and the target job description. Our AI will perform a deep audit of your compatibility and provide strategic optimization insights.
+                        <p className="text-base text-slate-400 max-w-xl">
+                            Upload your resume and the target job description to get instant feedback on compatibility, missing keywords, and ATS friendliness.
                         </p>
-                    </div>
-                    <div className="flex gap-4">
-                        <div className="p-4 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-xl">
-                            <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Processing Model</div>
-                            <div className="text-white font-bold flex items-center gap-2">
-                                <Brain size={16} className="text-fuchsia-400" />
-                                Llama 3.3 70B
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -147,9 +136,9 @@ const ResumeAnalytics = () => {
                     <div className="grid lg:grid-cols-2 gap-8 items-start">
                         {/* Input Section */}
                         <motion.div variants={itemVariants} className="space-y-8">
-                            <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-xl">
-                                <label className="text-sm font-black uppercase tracking-[0.3em] text-slate-500 block mb-6">1. Upload Resume (PDF)</label>
-                                <div className={`relative group border-2 border-dashed rounded-3xl p-10 transition-all ${resume ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-white/20 bg-white/5'}`}>
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+                                <label className="text-sm font-semibold text-slate-300 block mb-4">1. Upload Resume (PDF)</label>
+                                <div className={`relative group border-2 border-dashed rounded-xl p-8 transition-all ${resume ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-white/20 bg-white/5'}`}>
                                     <input 
                                         type="file" 
                                         accept=".pdf" 
@@ -157,26 +146,26 @@ const ResumeAnalytics = () => {
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                                     />
                                     <div className="flex flex-col items-center justify-center text-center relative z-10">
-                                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-all ${resume ? 'bg-emerald-500 text-slate-950' : 'bg-slate-900 text-slate-400 group-hover:scale-110 group-hover:text-white'}`}>
-                                            <Upload size={32} />
+                                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-all ${resume ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400 group-hover:text-white'}`}>
+                                            <Upload size={24} />
                                         </div>
-                                        <p className="text-lg font-bold text-white mb-1">
+                                        <p className="text-base font-semibold text-white mb-1">
                                             {resume ? resume.name : 'Drop your resume here'}
                                         </p>
-                                        <p className="text-sm text-slate-500 uppercase tracking-widest font-bold">
+                                        <p className="text-xs text-slate-500 font-medium">
                                             {resume ? `${(resume.size / 1024).toFixed(1)} KB` : 'or click to browse'}
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-xl">
-                                <label className="text-sm font-black uppercase tracking-[0.3em] text-slate-500 block mb-6">2. Job Description</label>
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+                                <label className="text-sm font-semibold text-slate-300 block mb-4">2. Job Description</label>
                                 <textarea 
                                     value={jobDescription}
                                     onChange={(e) => setJobDescription(e.target.value)}
-                                    placeholder="Paste the target job description here for a precision audit..."
-                                    className="w-full h-64 bg-slate-950/50 border border-white/10 rounded-3xl p-6 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500/50 transition-all resize-none font-medium"
+                                    placeholder="Paste the target job description here..."
+                                    className="w-full h-48 bg-slate-900/50 border border-white/10 rounded-xl p-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 transition-all resize-none text-sm"
                                 />
                             </div>
 
@@ -184,9 +173,9 @@ const ResumeAnalytics = () => {
                                 <motion.div 
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
-                                    className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-rose-400 flex items-center gap-3 font-bold text-sm uppercase tracking-wider"
+                                    className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 flex items-center gap-3 text-sm"
                                 >
-                                    <AlertCircle size={20} />
+                                    <AlertCircle size={18} />
                                     {error}
                                 </motion.div>
                             )}
@@ -194,18 +183,18 @@ const ResumeAnalytics = () => {
                             <button 
                                 onClick={handleAnalyze}
                                 disabled={loading}
-                                className="group w-full h-16 bg-white text-slate-950 font-black rounded-[1.5rem] flex items-center justify-center gap-4 transition-all hover:bg-slate-200 active:scale-95 disabled:opacity-50 uppercase tracking-[0.2em] text-sm shadow-2xl shadow-white/10"
+                                className="group w-full h-14 bg-gradient-to-r from-fuchsia-600 to-cyan-500 text-white font-semibold rounded-xl flex items-center justify-center gap-3 transition-all hover:opacity-90 active:scale-95 disabled:opacity-50 text-sm shadow-lg shadow-fuchsia-500/20"
                             >
                                 {loading ? (
                                     <>
-                                        <Loader2 className="animate-spin" size={20} />
-                                        Neural Synthesis in Progress...
+                                        <Loader2 className="animate-spin" size={18} />
+                                        Analyzing...
                                     </>
                                 ) : (
                                     <>
-                                        <Zap size={20} fill="currentColor" />
-                                        Initiate Deep Audit
-                                        <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                        <Zap size={18} fill="currentColor" />
+                                        Analyze Resume
+                                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                                     </>
                                 )}
                             </button>
@@ -213,39 +202,39 @@ const ResumeAnalytics = () => {
 
                         {/* Tips Section */}
                         <motion.div variants={itemVariants} className="space-y-6 lg:mt-0">
-                            <div className="p-8 bg-gradient-to-br from-fuchsia-600 to-indigo-600 rounded-[2.5rem] text-white shadow-2xl shadow-fuchsia-500/20">
-                                <Sparkles size={32} className="mb-6" />
-                                <h2 className="text-2xl font-black mb-4 uppercase tracking-tight">Why run an AI audit?</h2>
-                                <p className="text-white/80 font-medium leading-relaxed mb-8">
-                                    Modern recruiters use AI to filter 90% of candidates before a human even sees the resume. Our engine reverse-engineers these filters to help you bypass the "automated rejection" phase.
+                            <div className="p-6 bg-white/5 border border-white/10 rounded-2xl">
+                                <Sparkles size={24} className="mb-4 text-fuchsia-400" />
+                                <h2 className="text-lg font-bold mb-3 text-white">Why run an AI analysis?</h2>
+                                <p className="text-sm text-slate-400 leading-relaxed mb-6">
+                                    Modern recruiters use Applicant Tracking Systems (ATS) to filter candidates. Our tool helps you bypass these filters by optimizing your resume for the specific job.
                                 </p>
-                                <ul className="space-y-4">
+                                <ul className="space-y-3">
                                     {[
-                                        'Identify hidden keyword requirements',
-                                        'Audit ATS parsing compatibility',
-                                        'Verify skill-to-role relevance',
-                                        'Assess shortlisting probability'
+                                        'Identify missing keywords',
+                                        'Check ATS compatibility',
+                                        'Verify skill match',
+                                        'Improve shortlisting chances'
                                     ].map((tip, i) => (
-                                        <li key={i} className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                                            <CheckCircle size={16} />
+                                        <li key={i} className="flex items-center gap-3 text-sm text-slate-300">
+                                            <CheckCircle size={16} className="text-emerald-500" />
                                             {tip}
                                         </li>
                                     ))}
                                 </ul>
                             </div>
 
-                            <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] backdrop-blur-xl">
-                                <h3 className="text-sm font-black uppercase tracking-[0.3em] text-slate-500 mb-6">Platform Capabilities</h3>
-                                <div className="grid grid-cols-2 gap-4">
+                            <div className="p-6 bg-white/5 border border-white/10 rounded-2xl">
+                                <h3 className="text-sm font-semibold text-slate-300 mb-4">What we check</h3>
+                                <div className="grid grid-cols-2 gap-3">
                                     {[
-                                        { icon: Shield, label: 'ATS Secure', color: 'emerald' },
-                                        { icon: Search, label: 'Keyword Scan', color: 'cyan' },
-                                        { icon: Target, label: 'Shortlist %', color: 'amber' },
-                                        { icon: TrendingUp, label: 'Growth Plan', color: 'rose' }
+                                        { icon: Shield, label: 'ATS Format', color: 'emerald' },
+                                        { icon: Search, label: 'Keywords', color: 'cyan' },
+                                        { icon: Target, label: 'Match %', color: 'amber' },
+                                        { icon: TrendingUp, label: 'Suggestions', color: 'rose' }
                                     ].map((cap, i) => (
-                                        <div key={i} className="p-4 bg-slate-900 border border-white/5 rounded-2xl flex flex-col items-center text-center gap-3">
-                                            <cap.icon size={20} className={`text-${cap.color}-400`} />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">{cap.label}</span>
+                                        <div key={i} className="p-3 bg-slate-900 border border-white/5 rounded-xl flex items-center gap-3">
+                                            <cap.icon size={16} className={`text-${cap.color}-400`} />
+                                            <span className="text-xs font-medium text-slate-300">{cap.label}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -260,18 +249,17 @@ const ResumeAnalytics = () => {
                             animate={{ opacity: 1 }}
                             className="space-y-8"
                         >
-                            <div className="flex items-center gap-4 mb-8">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <Shield size={20} className="text-emerald-500" />
+                                    Analysis Results
+                                </h2>
                                 <button 
                                     onClick={() => setAnalysis(null)}
-                                    className="px-6 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all"
+                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium text-white transition-all w-fit"
                                 >
                                     New Analysis
                                 </button>
-                                <div className="h-px flex-grow bg-white/5" />
-                                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-emerald-500">
-                                    <Shield size={12} />
-                                    Audit Complete
-                                </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -281,123 +269,114 @@ const ResumeAnalytics = () => {
                                 <ScoreCard title="Shortlist Prob." score={analysis.interviewProbability} icon={Target} color="amber" />
                             </div>
 
-                            <div className="grid lg:grid-cols-3 gap-8">
+                            <div className="grid lg:grid-cols-3 gap-6">
                                 {/* Left Column: Keyword & Skills */}
-                                <div className="lg:col-span-2 space-y-8">
-                                    <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-xl">
-                                        <div className="flex items-center justify-between mb-8">
-                                            <h3 className="text-xl font-bold text-white flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
-                                                    <Search size={20} />
-                                                </div>
-                                                Keyword Analysis
-                                            </h3>
-                                        </div>
-                                        <div className="grid md:grid-cols-2 gap-8">
+                                <div className="lg:col-span-2 space-y-6">
+                                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                                        <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
+                                            <Search size={18} className="text-cyan-400" />
+                                            Keyword Analysis
+                                        </h3>
+                                        <div className="grid md:grid-cols-2 gap-6">
                                             <div>
-                                                <label className="text-[10px] font-black text-emerald-500 uppercase tracking-widest block mb-4">Found in Resume</label>
+                                                <label className="text-xs font-semibold text-slate-400 block mb-3">Found in Resume</label>
                                                 <div className="flex flex-wrap gap-2">
                                                     {analysis.keywordMatching.found.map((word, i) => (
-                                                        <span key={i} className="px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-bold uppercase tracking-wider">{word}</span>
+                                                        <span key={i} className="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-medium">{word}</span>
                                                     ))}
                                                 </div>
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-black text-rose-500 uppercase tracking-widest block mb-4">Missing Keywords</label>
+                                                <label className="text-xs font-semibold text-slate-400 block mb-3">Missing Keywords</label>
                                                 <div className="flex flex-wrap gap-2">
                                                     {analysis.keywordMatching.missing.map((word, i) => (
-                                                        <span key={i} className="px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[11px] font-bold uppercase tracking-wider">{word}</span>
+                                                        <span key={i} className="px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-medium">{word}</span>
                                                     ))}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-xl">
-                                        <div className="flex items-center justify-between mb-8">
-                                            <h3 className="text-xl font-bold text-white flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-fuchsia-500/10 text-fuchsia-400 flex items-center justify-center">
-                                                    <Brain size={20} />
-                                                </div>
-                                                Skill Proficiency Matrix
-                                            </h3>
-                                        </div>
-                                        <div className="space-y-8">
-                                            <div className="grid md:grid-cols-2 gap-8">
+                                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                                        <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
+                                            <Brain size={18} className="text-fuchsia-400" />
+                                            Skills Assessment
+                                        </h3>
+                                        <div className="space-y-6">
+                                            <div className="grid md:grid-cols-2 gap-6">
                                                 <div>
-                                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">Technical Skills Identified</label>
+                                                    <label className="text-xs font-semibold text-slate-400 block mb-3">Technical Skills</label>
                                                     <div className="flex flex-wrap gap-2">
                                                         {analysis.skillAnalysis.technical.map((skill, i) => (
-                                                            <span key={i} className="px-3 py-1.5 rounded-lg bg-white/5 text-slate-200 border border-white/10 text-[11px] font-bold uppercase tracking-wider">{skill}</span>
+                                                            <span key={i} className="px-2.5 py-1 rounded-md bg-white/5 text-slate-200 border border-white/10 text-xs font-medium">{skill}</span>
                                                         ))}
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">Soft Skills Identified</label>
+                                                    <label className="text-xs font-semibold text-slate-400 block mb-3">Soft Skills</label>
                                                     <div className="flex flex-wrap gap-2">
                                                         {analysis.skillAnalysis.soft.map((skill, i) => (
-                                                            <span key={i} className="px-3 py-1.5 rounded-lg bg-white/5 text-slate-200 border border-white/10 text-[11px] font-bold uppercase tracking-wider">{skill}</span>
+                                                            <span key={i} className="px-2.5 py-1 rounded-md bg-white/5 text-slate-200 border border-white/10 text-xs font-medium">{skill}</span>
                                                         ))}
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="p-6 bg-rose-500/5 border border-rose-500/20 rounded-3xl">
-                                                <label className="text-[10px] font-black text-rose-500 uppercase tracking-widest block mb-4">Critical Skill Gaps Detected</label>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {analysis.skillAnalysis.missing.map((skill, i) => (
-                                                        <span key={i} className="px-3 py-1.5 rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[11px] font-black uppercase tracking-wider">{skill}</span>
-                                                    ))}
+                                            {analysis.skillAnalysis.missing.length > 0 && (
+                                                <div className="p-4 bg-rose-500/5 border border-rose-500/20 rounded-xl">
+                                                    <label className="text-xs font-semibold text-rose-400 block mb-3">Skill Gaps Detected</label>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {analysis.skillAnalysis.missing.map((skill, i) => (
+                                                            <span key={i} className="px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-medium">{skill}</span>
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            )}
                                         </div>
                                     </div>
 
-                                    <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-xl">
-                                        <h3 className="text-xl font-bold text-white mb-6 uppercase tracking-tight">Project Quality Audit</h3>
-                                        <p className="text-slate-300 font-medium leading-relaxed italic">
-                                            "{analysis.projectQuality}"
+                                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                                        <h3 className="text-lg font-bold text-white mb-3">Project Quality</h3>
+                                        <p className="text-sm text-slate-300 leading-relaxed">
+                                            {analysis.projectQuality}
                                         </p>
                                     </div>
                                 </div>
 
                                 {/* Right Column: Insights & Strengths */}
-                                <div className="space-y-8">
-                                    <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-[2.5rem] p-8">
-                                        <h3 className="text-sm font-black text-emerald-400 uppercase tracking-widest mb-6">Resume Strengths</h3>
-                                        <ul className="space-y-4">
+                                <div className="space-y-6">
+                                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                                        <h3 className="text-sm font-semibold text-emerald-400 mb-4">Strengths</h3>
+                                        <ul className="space-y-3">
                                             {analysis.strengths.map((str, i) => (
-                                                <li key={i} className="flex gap-3">
-                                                    <CheckCircle size={18} className="text-emerald-500 flex-shrink-0" />
-                                                    <span className="text-sm font-bold text-slate-200">{str}</span>
+                                                <li key={i} className="flex gap-2">
+                                                    <CheckCircle size={16} className="text-emerald-500 flex-shrink-0 mt-0.5" />
+                                                    <span className="text-sm text-slate-300">{str}</span>
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
 
-                                    <div className="bg-rose-500/5 border border-rose-500/20 rounded-[2.5rem] p-8">
-                                        <h3 className="text-sm font-black text-rose-400 uppercase tracking-widest mb-6">Improvement Vectors</h3>
-                                        <ul className="space-y-4">
+                                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                                        <h3 className="text-sm font-semibold text-rose-400 mb-4">Areas to Improve</h3>
+                                        <ul className="space-y-3">
                                             {analysis.weakAreas.map((weak, i) => (
-                                                <li key={i} className="flex gap-3">
-                                                    <AlertCircle size={18} className="text-rose-500 flex-shrink-0" />
-                                                    <span className="text-sm font-bold text-slate-200">{weak}</span>
+                                                <li key={i} className="flex gap-2">
+                                                    <AlertCircle size={16} className="text-rose-500 flex-shrink-0 mt-0.5" />
+                                                    <span className="text-sm text-slate-300">{weak}</span>
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
 
-                                    <div className="bg-slate-900/50 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-xl">
-                                        <h3 className="text-sm font-black text-fuchsia-400 uppercase tracking-widest mb-6">Recruiter Insights</h3>
-                                        <div className="p-4 bg-white/5 border border-white/5 rounded-2xl mb-6">
-                                            <p className="text-sm font-medium text-slate-300 leading-relaxed italic">
-                                                {analysis.recruiterInsights}
-                                            </p>
-                                        </div>
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">Neural Strategy Suggestions</label>
+                                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                                        <h3 className="text-sm font-semibold text-fuchsia-400 mb-4">Feedback & Suggestions</h3>
+                                        <p className="text-sm text-slate-300 leading-relaxed mb-4 pb-4 border-b border-white/10">
+                                            {analysis.recruiterInsights}
+                                        </p>
                                         <ul className="space-y-3">
                                             {analysis.suggestions.map((sug, i) => (
-                                                <li key={i} className="flex gap-3 text-xs font-bold text-slate-400">
-                                                    <Sparkles size={14} className="text-fuchsia-400 flex-shrink-0" />
+                                                <li key={i} className="flex gap-2 text-sm text-slate-400">
+                                                    <Sparkles size={14} className="text-fuchsia-400 flex-shrink-0 mt-0.5" />
                                                     {sug}
                                                 </li>
                                             ))}

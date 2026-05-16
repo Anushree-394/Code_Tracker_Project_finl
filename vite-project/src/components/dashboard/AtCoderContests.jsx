@@ -127,7 +127,7 @@ const AtCoderContests = () => {
                 <p className="text-slate-400 max-w-md mb-4">{error}</p>
                 <div className="bg-slate-900 border border-white/10 p-4 rounded-xl text-left text-xs text-slate-400 mb-8 max-w-md">
                     <p className="font-bold text-white mb-1"><Info size={12} className="inline mr-1" /> Troubleshooting:</p>
-                    1. Ensure your backend server is running on port 5000.<br />
+                    1. Ensure your backend server is running on port 5001.<br />
                     2. Check if the @qatadaazzeh/atcoder-api is installed in the backend folder.<br />
                     3. Verify the /api/contests/atcoder route is correctly registered in backend/index.js.
                 </div>

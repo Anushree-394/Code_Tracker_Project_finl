@@ -27,6 +27,7 @@ app.use('/api/aptitude', require('./routes/aptitude'));
 app.use('/api/codechef', require('./routes/codechef'));
 app.use('/api/atcoder', require('./routes/atcoder'));
 app.use('/api/resume', require('./routes/resume'));
+app.use('/api/roadmap', require('./routes/roadmap'));
 app.get('/api/test', (req, res) => res.json({ msg: 'Backend is working!' }));
 
 // Serve uploaded files

@@ -11,9 +11,12 @@ import {
     Target,
     Bell,
     User,
-    Home
+    Home,
+    Map
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { auth } from '../../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import {
     LineChart,
     Line,
@@ -140,8 +143,10 @@ const UpcomingContest = ({ name, platform, date, countdown }) => (
 
 
 const Dashboard = () => {
+    const navigate = useNavigate();
     const [upcomingContestCount, setUpcomingContestCount] = React.useState(0);
     const [topUpcomingContests, setTopUpcomingContests] = React.useState([]);
+    const [activeRoadmaps, setActiveRoadmaps] = React.useState([]);
 
     React.useEffect(() => {
         const fetchContestCount = async () => {
@@ -156,6 +161,20 @@ const Dashboard = () => {
         };
 
         fetchContestCount();
+
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                try {
+                    const res = await fetch(`http://localhost:5001/api/roadmap/${currentUser.uid}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        setActiveRoadmaps(data);
+                    }
+                } catch (e) { console.error("Error fetching roadmaps:", e); }
+            }
+        });
+
+        return () => unsubscribe();
     }, []);
 
     const [totalSolved, setTotalSolved] = React.useState(0);
@@ -375,9 +394,32 @@ const Dashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left Column (Charts & AI) */}
                 <div className="lg:col-span-2 space-y-8">
                     <AIRecommendation />
+
+                    {activeRoadmaps.length > 0 && (
+                        <div className="bg-gradient-to-r from-indigo-500/10 to-cyan-500/10 border border-indigo-500/20 rounded-3xl p-6 relative overflow-hidden group">
+                            <div className="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
+                                <Map size={150} />
+                            </div>
+                            <h3 className="font-semibold text-white mb-2 flex items-center gap-2 relative z-10">
+                                <Map size={18} className="text-cyan-400" />
+                                Active Roadmap
+                            </h3>
+                            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div>
+                                    <h4 className="text-xl font-bold text-slate-200">{activeRoadmaps[0].name}</h4>
+                                    <p className="text-sm text-slate-400 mt-1">Goal: {activeRoadmaps[0].goal}</p>
+                                </div>
+                                <button 
+                                    onClick={() => navigate('/dashboard/roadmap')}
+                                    className="px-5 py-2.5 rounded-xl bg-indigo-500 text-white text-sm font-bold shadow-lg shadow-indigo-500/20 hover:bg-indigo-400 transition-all hover:scale-105"
+                                >
+                                    Continue Learning
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Recent Activity */}
                     <div className="bg-white/5 border border-white/10 rounded-3xl p-6">

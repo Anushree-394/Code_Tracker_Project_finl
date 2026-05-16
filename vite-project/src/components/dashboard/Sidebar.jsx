@@ -266,7 +266,7 @@ const Sidebar = () => {
                         <SubNavItem label="Companies" to="/dashboard/resources/companies" />
                     </NavItem>
                     <NavItem icon={BarChart3} label="Resume Analytics" to="/dashboard/analytics" />
-                    <NavItem icon={Target} label="Skill Gaps" to="/dashboard/skills" />
+                    <NavItem icon={Target} label="Roadmap" to="/dashboard/roadmap" />
                     <NavItem icon={Bell} label="Notifications" to="/dashboard/notifications" />
                 </nav>
             </div>

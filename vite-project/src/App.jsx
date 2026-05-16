@@ -24,7 +24,7 @@ import AptitudeQuiz from './components/dashboard/AptitudeQuiz'
 import Settings from './components/dashboard/Settings'
 import Notifications from './components/dashboard/Notifications'
 import ResumeAnalytics from './components/dashboard/ResumeAnalytics'
-
+import Roadmap from './components/dashboard/Roadmap'
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
@@ -356,6 +356,7 @@ function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="analytics" element={<ResumeAnalytics />} />
+          <Route path="roadmap" element={<Roadmap />} />
         </Route>
       </Routes>
     </Router>
