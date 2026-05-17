@@ -16,6 +16,7 @@ const roles = [
 const QuestionCard = ({ question, index, role, onNavigateFeedback }) => {
     const [isRecording, setIsRecording] = useState(false);
     const [transcript, setTranscript] = useState('');
+    const [speechSupported, setSpeechSupported] = useState(true);
     const recognitionRef = useRef(null);
 
     useEffect(() => {
@@ -26,24 +27,42 @@ const QuestionCard = ({ question, index, role, onNavigateFeedback }) => {
             recognitionRef.current.interimResults = true;
 
             recognitionRef.current.onresult = (event) => {
-                const current = event.resultIndex;
-                const resultTranscript = event.results[current][0].transcript;
-                setTranscript(resultTranscript);
+                let currentTranscript = '';
+                for (let i = 0; i < event.results.length; i++) {
+                    currentTranscript += event.results[i][0].transcript + ' ';
+                }
+                setTranscript(currentTranscript.trim());
+            };
+
+            recognitionRef.current.onerror = (e) => {
+                console.error("Speech recognition error:", e);
+                setIsRecording(false);
             };
 
             recognitionRef.current.onend = () => {
                 setIsRecording(false);
             };
+        } else {
+            setSpeechSupported(false);
         }
     }, []);
 
     const toggleRecording = () => {
+        if (!recognitionRef.current) {
+            alert("Voice recording is not supported in your browser. Please type your answer below.");
+            return;
+        }
         if (isRecording) {
-            recognitionRef.current.stop();
+            try { recognitionRef.current.stop(); } catch(e){}
+            setIsRecording(false);
         } else {
-            setTranscript('');
-            recognitionRef.current.start();
-            setIsRecording(true);
+            try {
+                recognitionRef.current.start();
+                setIsRecording(true);
+            } catch(e) {
+                console.error("Recording start error:", e);
+                setIsRecording(false);
+            }
         }
     };
 
@@ -80,36 +99,49 @@ const QuestionCard = ({ question, index, role, onNavigateFeedback }) => {
 
                     <div className="space-y-4">
                         <div className="flex flex-wrap items-center gap-4">
-                            <button
-                                onClick={toggleRecording}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold uppercase tracking-widest text-sm transition-all border-2 ${isRecording
-                                    ? 'bg-rose-500 border-rose-400 text-white animate-pulse'
-                                    : 'bg-slate-900 border-white/10 text-slate-300 hover:border-white/20 hover:text-white'
-                                    }`}
-                            >
-                                {isRecording ? <Square size={16} fill="currentColor" /> : <Mic size={16} />}
-                                {isRecording ? 'Listening...' : 'Record Answer'}
-                            </button>
+                            {speechSupported ? (
+                                <button
+                                    onClick={toggleRecording}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold uppercase tracking-widest text-sm transition-all border-2 ${isRecording
+                                        ? 'bg-rose-500 border-rose-400 text-white animate-pulse'
+                                        : 'bg-slate-900 border-white/10 text-slate-300 hover:border-white/20 hover:text-white'
+                                        }`}
+                                >
+                                    {isRecording ? <Square size={16} fill="currentColor" /> : <Mic size={16} />}
+                                    {isRecording ? 'Listening...' : 'Record Answer'}
+                                </button>
+                            ) : (
+                                <span className="text-xs text-amber-400 bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-500/20 font-semibold">
+                                    ⚠️ Voice recording not supported in this browser. Please type your answer.
+                                </span>
+                            )}
 
-                            {transcript && !isRecording && (
+                            {transcript.trim().length > 0 && (
                                 <button
                                     onClick={() => onNavigateFeedback(question, transcript)}
-                                    className="flex items-center gap-3 px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold uppercase tracking-widest text-xs transition-all hover:bg-indigo-500 hover:scale-105 active:scale-95 shadow-lg shadow-indigo-600/20"
+                                    className="flex items-center gap-3 px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-emerald-500 text-white font-black uppercase tracking-widest text-xs transition-all hover:scale-105 active:scale-95 shadow-xl shadow-indigo-500/20 animate-fade-in"
                                 >
                                     <Send size={16} />
-                                    Submit Answer
+                                    Analyze Response
                                 </button>
                             )}
                         </div>
 
-                        {transcript && (
-                            <div className="bg-slate-950/50 rounded-xl p-4 border border-white/5">
-                                <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 block mb-3">Live Transcript</span>
-                                <p className="text-slate-300 italic font-medium leading-relaxed text-base">
-                                    "{transcript}"
-                                </p>
+                        <div className="bg-slate-950/60 rounded-2xl p-5 border border-white/10 focus-within:border-indigo-500/50 transition-all">
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                    Your Response {isRecording && <span className="text-rose-500 animate-pulse font-normal ml-2">(🔴 Live Recording)</span>}
+                                </span>
+                                <span className="text-[10px] text-slate-600 font-bold uppercase">Editable</span>
                             </div>
-                        )}
+                            <textarea
+                                value={transcript}
+                                onChange={(e) => setTranscript(e.target.value)}
+                                placeholder={isRecording ? "Speak now, your voice is being transcribed..." : "Type your answer here or click 'Record Answer' to speak..."}
+                                rows={4}
+                                className="w-full bg-transparent text-slate-200 placeholder-slate-500 text-base leading-relaxed focus:outline-none resize-y min-h-[100px]"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
