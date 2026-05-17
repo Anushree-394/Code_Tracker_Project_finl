@@ -30,7 +30,7 @@ const sendWelcomeEmail = async (toEmail, userName) => {
                     </ul>
                     <p>Ready to start your journey? Log in to your dashboard and connect your platforms!</p>
                     <div style="text-align: center; margin: 30px 0;">
-                        <a href="http://localhost:5173" style="background: #06b6d4; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Go to Dashboard</a>
+                        <a href="https://code-tracker-project-finl.onrender.com" style="background: #06b6d4; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Go to Dashboard</a>
                     </div>
                     <p>If you have any questions, feel free to reply to this email.</p>
                     <p>Happy Coding!<br>The TrackCode Team</p>
