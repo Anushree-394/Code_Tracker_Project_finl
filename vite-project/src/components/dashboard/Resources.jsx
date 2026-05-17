@@ -39,35 +39,45 @@ const ResourceCard = ({ title, description, type, link }) => {
     );
 };
 
-const CompanyCard = ({ name, logo, link }) => (
-    <a href={link} target="_blank" rel="noopener noreferrer" className="block group">
-        <div className="relative overflow-hidden rounded-xl bg-white/5 p-px transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-fuchsia-500/20">
-            <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/10 to-cyan-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            <div className="relative flex items-center justify-between rounded-[11px] bg-slate-900/50 p-4 backdrop-blur-sm border border-white/5 group-hover:border-white/10">
-                <div className="flex items-center gap-4">
-                    <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg bg-white p-2 shadow-sm">
-                        <img
-                            src={logo}
-                            alt={name}
-                            className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-110"
-                            onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.style.display = 'none';
-                                e.target.parentNode.innerText = name[0];
-                                e.target.parentNode.className += " flex items-center justify-center text-xl font-bold text-slate-900 h-full w-full";
-                            }}
-                        />
+const CompanyCard = ({ name, logo, color, link }) => {
+    const [imgError, setImgError] = React.useState(false);
+    const showLogo = logo && !imgError;
+    const brandColor = color || '#6366f1';
+
+    return (
+        <a href={link} target="_blank" rel="noopener noreferrer" className="block group">
+            <div className="relative overflow-hidden rounded-xl bg-white/5 p-px transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-fuchsia-500/20">
+                <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/10 to-cyan-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                <div className="relative flex items-center justify-between rounded-[11px] bg-slate-900/50 p-4 backdrop-blur-sm border border-white/5 group-hover:border-white/10">
+                    <div className="flex items-center gap-4">
+                        <div
+                            className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg shadow-sm flex-shrink-0"
+                            style={{ background: showLogo ? '#ffffff' : brandColor }}
+                        >
+                            {showLogo ? (
+                                <img
+                                    src={logo}
+                                    alt={name}
+                                    className="h-full w-full object-contain p-1.5 transition-transform duration-300 group-hover:scale-110"
+                                    onError={() => setImgError(true)}
+                                />
+                            ) : (
+                                <span className="text-xl font-black text-white select-none">
+                                    {name[0]}
+                                </span>
+                            )}
+                        </div>
+                        <span className="font-semibold text-slate-200 transition-colors group-hover:text-white">{name}</span>
                     </div>
-                    <span className="font-semibold text-slate-200 transition-colors group-hover:text-white">{name}</span>
+                    <ExternalLink
+                        size={16}
+                        className="text-slate-500 transition-all duration-300 group-hover:text-fuchsia-400 group-hover:translate-x-1"
+                    />
                 </div>
-                <ExternalLink
-                    size={16}
-                    className="text-slate-500 transition-all duration-300 group-hover:text-fuchsia-400 group-hover:translate-x-1"
-                />
             </div>
-        </div>
-    </a>
-);
+        </a>
+    );
+};
 
 const Resources = ({ category }) => {
     const allResources = {
@@ -121,18 +131,18 @@ const Resources = ({ category }) => {
     };
 
     const companies = [
-        { name: "Microsoft", logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg", link: "https://workat.tech/company/microsoft/interview-questions/problem-solving" },
-        { name: "Amazon", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg", link: "https://workat.tech/company/amazon/interview-questions/problem-solving" },
-        { name: "Google", logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg", link: "https://workat.tech/company/google/interview-questions/problem-solving" },
-        { name: "Flipkart", logo: "https://upload.wikimedia.org/wikipedia/en/2/2f/Flipkart_logo_croppped.png", link: "https://workat.tech/company/flipkart/interview-questions/problem-solving" },
-        { name: "Adobe", logo: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Adobe_Corporate_Logo.png", link: "https://workat.tech/company/adobe/interview-questions/problem-solving" },
-        { name: "Uber", logo: "https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png", link: "https://workat.tech/company/uber/interview-questions/problem-solving" },
-        { name: "Swiggy", logo: "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto/portal/m/logo_192x192.png", link: "https://workat.tech/company/swiggy/interview-questions/problem-solving" },
-        { name: "Paytm", logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", link: "https://workat.tech/company/paytm/interview-questions/problem-solving" },
-        { name: "Oracle", logo: "https://upload.wikimedia.org/wikipedia/commons/5/50/Oracle_logo.svg", link: "https://workat.tech/company/oracle/interview-questions/problem-solving" },
-        { name: "Samsung", logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg", link: "https://workat.tech/company/samsung/interview-questions/problem-solving" },
-        { name: "MakeMyTrip", logo: "https://upload.wikimedia.org/wikipedia/commons/8/80/MakeMyTrip_Logo.svg", link: "https://workat.tech/company/makemytrip/interview-questions/problem-solving" },
-        { name: "Morgan Stanley", logo: "https://upload.wikimedia.org/wikipedia/commons/3/34/Morgan_Stanley_Logo_1.svg", link: "https://workat.tech/company/morgan-stanley/interview-questions/problem-solving" }
+        { name: "Microsoft",    logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg",              color: "#00a4ef", link: "https://workat.tech/company/microsoft/interview-questions/problem-solving" },
+        { name: "Amazon",       logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",                 color: "#FF9900", link: "https://workat.tech/company/amazon/interview-questions/problem-solving" },
+        { name: "Google",       logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",            color: "#4285F4", link: "https://workat.tech/company/google/interview-questions/problem-solving" },
+        { name: "Flipkart",     logo: null,                                                                                   color: "#2874f0", link: "https://workat.tech/company/flipkart/interview-questions/problem-solving" },
+        { name: "Adobe",        logo: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Adobe_Corporate_Logo.png",       color: "#FF0000", link: "https://workat.tech/company/adobe/interview-questions/problem-solving" },
+        { name: "Uber",         logo: "https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png",             color: "#000000", link: "https://workat.tech/company/uber/interview-questions/problem-solving" },
+        { name: "Swiggy",       logo: null,                                                                                   color: "#FC8019", link: "https://workat.tech/company/swiggy/interview-questions/problem-solving" },
+        { name: "Paytm",        logo: null,                                                                                   color: "#002970", link: "https://workat.tech/company/paytm/interview-questions/problem-solving" },
+        { name: "Oracle",       logo: "https://upload.wikimedia.org/wikipedia/commons/5/50/Oracle_logo.svg",                color: "#F80000", link: "https://workat.tech/company/oracle/interview-questions/problem-solving" },
+        { name: "Samsung",      logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg",               color: "#1428A0", link: "https://workat.tech/company/samsung/interview-questions/problem-solving" },
+        { name: "MakeMyTrip",   logo: null,                                                                                   color: "#E4121B", link: "https://workat.tech/company/makemytrip/interview-questions/problem-solving" },
+        { name: "Morgan Stanley",logo: null,                                                                                  color: "#003087", link: "https://workat.tech/company/morgan-stanley/interview-questions/problem-solving" }
     ];
 
     const resources = allResources[category] || [];

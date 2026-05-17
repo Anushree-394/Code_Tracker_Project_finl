@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { auth } from '../../firebase';
+import { signOut } from 'firebase/auth';
 import {
     LayoutDashboard,
     Trophy,
@@ -7,7 +9,7 @@ import {
     BarChart3,
     Target,
     Bell,
-    Settings,
+    HelpCircle,
     LogOut,
     ChevronRight,
     BookOpen,
@@ -66,13 +68,16 @@ const PlatformCard = ({ platform }) => (
     </div>
 );
 
-const NavItem = ({ icon: Icon, label, to, active = false, children }) => {
+const NavItem = ({ icon: Icon, label, to, active = false, onClick, children }) => {
     const [isOpen, setIsOpen] = React.useState(false);
     const hasChildren = React.Children.count(children) > 0;
 
     const content = (
         <button
-            onClick={() => hasChildren ? setIsOpen(!isOpen) : null}
+            onClick={(e) => {
+                if (onClick) onClick(e);
+                if (hasChildren) setIsOpen(!isOpen);
+            }}
             className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all ${active
                 ? 'bg-gradient-to-r from-fuchsia-500/20 to-cyan-400/20 border border-white/10 text-white'
                 : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -115,6 +120,15 @@ const Sidebar = () => {
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [totalSolved, setTotalSolved] = useState(0);
+
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            navigate('/');
+        } catch (error) {
+            console.error("Error logging out:", error);
+        }
+    };
 
     const extractHandle = (url) => {
         if (!url) return '';
@@ -272,8 +286,8 @@ const Sidebar = () => {
             </div>
 
             <div className="mt-auto pt-6 border-t border-white/5 flex-shrink-0">
-                <NavItem icon={Settings} label="Settings" to="/dashboard/settings" />
-                <NavItem icon={LogOut} label="Logout" />
+                <NavItem icon={HelpCircle} label="Help & Support" to="/dashboard/help" />
+                <NavItem icon={LogOut} label="Logout" onClick={handleLogout} />
             </div>
         </aside>
     );

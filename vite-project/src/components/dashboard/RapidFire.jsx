@@ -50,6 +50,50 @@ const RapidFire = () => {
 
     const questionCounts = [5, 10, 15, 20];
 
+    const normalizeCorrectIndex = (q) => {
+        if (!q || !q.options) return 0;
+        
+        let val = q.correct ?? q.correctAnswer ?? q.correct_answer ?? q.answer ?? q.correctOption ?? q.correct_option;
+        
+        if (val === undefined || val === null) return 0;
+
+        if (Array.isArray(val)) {
+            val = val[0];
+        }
+
+        if (typeof val === 'number') {
+            if (val >= 0 && val < q.options.length) return val;
+            if (val === 4 && q.options.length === 4) return 3; // Handle 1-indexed 4
+            return 0;
+        }
+
+        if (typeof val === 'string') {
+            const str = val.trim();
+            const parsed = parseInt(str, 10);
+            if (!isNaN(parsed)) {
+                if (parsed >= 0 && parsed < q.options.length) return parsed;
+                if (parsed === 4 && q.options.length === 4) return 3;
+            }
+
+            const upper = str.toUpperCase();
+            if (upper === 'A' || upper.startsWith('OPTION A') || upper.startsWith('A)') || upper.startsWith('A.')) return 0;
+            if (upper === 'B' || upper.startsWith('OPTION B') || upper.startsWith('B)') || upper.startsWith('B.')) return 1;
+            if (upper === 'C' || upper.startsWith('OPTION C') || upper.startsWith('C)') || upper.startsWith('C.')) return 2;
+            if (upper === 'D' || upper.startsWith('OPTION D') || upper.startsWith('D)') || upper.startsWith('D.')) return 3;
+
+            const cleanTarget = str.toLowerCase().replace(/^option\s+[a-d][:.)]?\s*/i, '').replace(/^[a-d][:.)]\s*/i, '').trim();
+            const matchIdx = q.options.findIndex(opt => {
+                if (!opt) return false;
+                const cleanOpt = opt.toLowerCase().replace(/^[a-d][:.)]\s*/i, '').trim();
+                return cleanOpt === cleanTarget || cleanOpt.includes(cleanTarget) || cleanTarget.includes(cleanOpt);
+            });
+
+            if (matchIdx !== -1) return matchIdx;
+        }
+
+        return 0;
+    };
+
     const startQuiz = async () => {
         setLoading(true);
         try {
@@ -68,7 +112,12 @@ const RapidFire = () => {
             const data = await response.json();
 
             if (data.questions && data.questions.length > 0) {
-                setQuestions(data.questions);
+                const normalizedQuestions = data.questions.map(q => ({
+                    ...q,
+                    options: Array.isArray(q.options) && q.options.length > 0 ? q.options : ["Option A", "Option B", "Option C", "Option D"],
+                    correct: normalizeCorrectIndex(q)
+                }));
+                setQuestions(normalizedQuestions);
                 setGameState('quiz');
                 setCurrentQuestionIdx(0);
                 setScore(0);
@@ -107,11 +156,11 @@ const RapidFire = () => {
     }, [gameState, timer, loading]);
 
     const handleNext = () => {
-        // Stop any current interval
         clearInterval(timerRef.current);
 
         const currentQ = questions[currentQuestionIdx];
-        const isCorrect = selectedAnswer === currentQ.correct;
+        const correctIndex = currentQ.correct;
+        const isCorrect = selectedAnswer === correctIndex;
 
         if (isCorrect) {
             setScore(prev => prev + 1);
@@ -119,14 +168,14 @@ const RapidFire = () => {
 
         setAnswers(prev => [...prev, {
             q: currentQ.question,
-            correct: currentQ.correct,
+            correct: correctIndex,
             selected: selectedAnswer
         }]);
 
         if (currentQuestionIdx < questions.length - 1) {
             setCurrentQuestionIdx(prev => prev + 1);
             setSelectedAnswer(null);
-            setTimer(10); // Reset timer for next question
+            setTimer(10);
             setIsTimeWarning(false);
         } else {
             setGameState('results');
@@ -518,11 +567,21 @@ const RapidFire = () => {
                                             </div>
                                             <p className="text-xl font-bold text-white tracking-tight">{item.q}</p>
                                         </div>
-                                        <div className="bg-white/[0.03] border border-white/[0.05] p-6 rounded-3xl min-w-[240px] flex flex-col gap-2">
-                                            <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Master Protocol Definition:</span>
-                                            <p className="text-emerald-400 font-bold tracking-tight">
-                                                {questions[idx].options[item.correct]}
-                                            </p>
+                                        <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+                                            <div className="bg-white/[0.03] border border-white/[0.05] p-5 rounded-2xl flex-1 flex flex-col gap-1 min-w-[220px]">
+                                                <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Master Protocol (Correct):</span>
+                                                <p className="text-emerald-400 font-bold tracking-tight text-sm">
+                                                    {String.fromCharCode(65 + item.correct)}. {questions[idx]?.options?.[item.correct] || `Option ${String.fromCharCode(65 + item.correct)}`}
+                                                </p>
+                                            </div>
+                                            {item.selected !== item.correct && (
+                                                <div className="bg-rose-500/[0.05] border border-rose-500/20 p-5 rounded-2xl flex-1 flex flex-col gap-1 min-w-[220px]">
+                                                    <span className="text-[9px] font-black text-rose-400/80 uppercase tracking-widest">Your Input:</span>
+                                                    <p className="text-rose-400 font-bold tracking-tight text-sm">
+                                                        {item.selected !== null && item.selected !== undefined ? `${String.fromCharCode(65 + item.selected)}. ${questions[idx]?.options?.[item.selected]}` : "No Input (Time Expired)"}
+                                                    </p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

@@ -26,7 +26,10 @@ import {
     Tooltip,
     ResponsiveContainer,
     AreaChart,
-    Area
+    Area,
+    BarChart,
+    Bar,
+    Legend
 } from 'recharts';
 
 const StatCard = ({ title, value, icon: Icon, trend, color }) => {
@@ -54,39 +57,35 @@ const StatCard = ({ title, value, icon: Icon, trend, color }) => {
     );
 };
 
-const AIRecommendation = () => (
-    <div className="col-span-1 lg:col-span-2 relative overflow-hidden rounded-3xl p-0.5 bg-gradient-to-br from-fuchsia-500/30 via-purple-500/20 to-cyan-500/30 group">
-        <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-600/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        <div className="relative h-full bg-slate-900/90 backdrop-blur-xl rounded-[23px] p-6 sm:p-8">
-            <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-30 transition-opacity duration-500">
-                <Sparkles size={120} className="text-fuchsia-400 blur-sm" />
+const WeeklyActivityChart = ({ data }) => (
+    <div className="col-span-1 lg:col-span-2 relative overflow-hidden rounded-3xl p-6 bg-white/5 border border-white/10 group">
+        <div className="flex items-center justify-between mb-6">
+            <h3 className="font-semibold text-white flex items-center gap-2">
+                <Award size={18} className="text-fuchsia-400" />
+                Weekly Activity
+            </h3>
+            <div className="text-xs font-medium bg-fuchsia-500/20 text-fuchsia-300 px-3 py-1 rounded-full border border-fuchsia-500/30">
+                {data.reduce((acc, curr) => acc + curr.solves, 0)} Solves This Week
             </div>
-
-            <div className="relative z-10 flex flex-col h-full justify-between">
-                <div>
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="p-2.5 rounded-xl bg-gradient-to-br from-fuchsia-500/20 to-purple-500/20 text-fuchsia-300 ring-1 ring-fuchsia-500/30 shadow-[0_0_15px_-3px_rgba(217,70,239,0.3)]">
-                            <BrainCircuit size={24} />
-                        </div>
-                        <h3 className="text-xl font-bold bg-gradient-to-r from-white to-fuchsia-200 bg-clip-text text-transparent">
-                            AI Personal Insights
-                        </h3>
-                    </div>
-
-                    <p className="text-slate-300 text-base leading-relaxed max-w-2xl mb-8 font-light">
-                        “AI Insight: Connect your platforms to get personalized analysis of your coding performance and speed.”
-                    </p>
-                </div>
-
-                <div className="flex gap-4">
-                    <button className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm font-medium transition-all hover:scale-105 border border-white/10">
-                        View Detailed Analysis
-                    </button>
-                    <button className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-600 to-fuchsia-500 text-white text-sm font-bold hover:shadow-[0_0_20px_-5px_rgba(217,70,239,0.5)] transition-all hover:scale-105 hover:-translate-y-0.5">
-                        Optimize Strategy
-                    </button>
-                </div>
-            </div>
+        </div>
+        
+        <div className="h-[200px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                    <XAxis dataKey="name" stroke="rgba(255,255,255,0.2)" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="rgba(255,255,255,0.2)" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
+                    <Tooltip
+                        cursor={{ fill: 'rgba(217,70,239,0.1)' }}
+                        contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '12px', color: '#fff' }}
+                        itemStyle={{ color: '#fff' }}
+                    />
+                    <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                    <Bar dataKey="leetcode" name="LeetCode" stackId="a" fill="#f97316" barSize={30} />
+                    <Bar dataKey="codeforces" name="Codeforces" stackId="a" fill="#3b82f6" barSize={30} />
+                    <Bar dataKey="atcoder" name="AtCoder" stackId="a" fill="#ef4444" barSize={30} radius={[4, 4, 0, 0]} />
+                </BarChart>
+            </ResponsiveContainer>
         </div>
     </div>
 );
@@ -190,6 +189,7 @@ const Dashboard = () => {
         { name: 'Sat', solves: 0 },
         { name: 'Sun', solves: 0 },
     ]);
+    const [ratingProgressionData, setRatingProgressionData] = React.useState([{ name: 'Init', rating: 0 }]);
 
     const extractHandle = (url) => {
         if (!url) return '';
@@ -271,6 +271,19 @@ const Dashboard = () => {
                                         ratings.push(infoData.result[0].rating);
                                     }
                                 }
+                                
+                                const ratingHistoryResp = await fetch(`https://codeforces.com/api/user.rating?handle=${handle}`);
+                                if (ratingHistoryResp.ok) {
+                                    const ratingHistData = await ratingHistoryResp.json();
+                                    if (ratingHistData.status === 'OK' && ratingHistData.result.length > 0) {
+                                        const formattedRatings = ratingHistData.result.map((r, i) => ({
+                                            name: `C${i + 1}`,
+                                            rating: r.newRating
+                                        }));
+                                        // Keep only the last 15 contests for a cleaner chart
+                                        setRatingProgressionData(formattedRatings.slice(-15));
+                                    }
+                                }
                             } catch (e) { console.error("CF fetch error", e); }
                         }
 
@@ -314,17 +327,25 @@ const Dashboard = () => {
                             last7Days.push({ 
                                 name: days[d.getDay()], 
                                 dateStr: d.toDateString(), 
-                                solves: 0 
+                                solves: 0,
+                                leetcode: 0,
+                                codeforces: 0,
+                                atcoder: 0
                             });
                         }
 
                         allSubs.forEach(s => {
                             const subDate = new Date(s.timestamp).toDateString();
                             const dayObj = last7Days.find(d => d.dateStr === subDate);
-                            if (dayObj) dayObj.solves++;
+                            if (dayObj) {
+                                dayObj.solves++;
+                                if (s.platform === 'LeetCode') dayObj.leetcode++;
+                                if (s.platform === 'Codeforces') dayObj.codeforces++;
+                                if (s.platform === 'AtCoder') dayObj.atcoder++;
+                            }
                         });
 
-                        setChartData(last7Days.map(({ name, solves }) => ({ name, solves })));
+                        setChartData(last7Days.map(({ name, solves, leetcode, codeforces, atcoder }) => ({ name, solves, leetcode, codeforces, atcoder })));
                         setRecentSubmissions(allSubs.sort((a, b) => b.timestamp - a.timestamp).slice(0, 5));
                     }
                 }
@@ -336,10 +357,6 @@ const Dashboard = () => {
         };
         fetchAllStats();
     }, []);
-
-    const ratingData = [
-        { name: 'Init', rating: 0 },
-    ];
 
     return (
         <div className="min-h-screen bg-slate-950 text-slate-100 p-6 relative overflow-hidden">
@@ -395,28 +412,40 @@ const Dashboard = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
-                    <AIRecommendation />
+                    <WeeklyActivityChart data={chartData} />
 
                     {activeRoadmaps.length > 0 && (
-                        <div className="bg-gradient-to-r from-indigo-500/10 to-cyan-500/10 border border-indigo-500/20 rounded-3xl p-6 relative overflow-hidden group">
-                            <div className="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
-                                <Map size={150} />
-                            </div>
-                            <h3 className="font-semibold text-white mb-2 flex items-center gap-2 relative z-10">
+                        <div className="space-y-4">
+                            <h3 className="font-semibold text-white flex items-center gap-2">
                                 <Map size={18} className="text-cyan-400" />
-                                Active Roadmap
+                                Active Roadmaps ({activeRoadmaps.length})
                             </h3>
-                            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div>
-                                    <h4 className="text-xl font-bold text-slate-200">{activeRoadmaps[0].name}</h4>
-                                    <p className="text-sm text-slate-400 mt-1">Goal: {activeRoadmaps[0].goal}</p>
-                                </div>
-                                <button 
-                                    onClick={() => navigate('/dashboard/roadmap')}
-                                    className="px-5 py-2.5 rounded-xl bg-indigo-500 text-white text-sm font-bold shadow-lg shadow-indigo-500/20 hover:bg-indigo-400 transition-all hover:scale-105"
-                                >
-                                    Continue Learning
-                                </button>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {activeRoadmaps.map((rm, idx) => (
+                                    <div key={idx} className="bg-gradient-to-r from-indigo-500/10 to-cyan-500/10 border border-indigo-500/20 rounded-3xl p-5 relative overflow-hidden group flex flex-col justify-between">
+                                        <div className="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4 pointer-events-none">
+                                            <Map size={100} />
+                                        </div>
+                                        <div className="relative z-10 mb-5">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
+                                                    In Progress
+                                                </span>
+                                                <span className="text-[10px] text-slate-400 font-medium bg-slate-900/50 px-2 py-0.5 rounded-full">
+                                                    {rm.completedTasks ? rm.completedTasks.length : 0} tasks done
+                                                </span>
+                                            </div>
+                                            <h4 className="text-lg font-bold text-slate-200 line-clamp-1">{rm.name}</h4>
+                                            <p className="text-xs text-slate-400 mt-1 line-clamp-2">Goal: {rm.goal}</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => navigate('/dashboard/roadmap')}
+                                            className="w-full py-2.5 rounded-xl bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-500/20 hover:bg-indigo-400 transition-all hover:scale-[1.02] active:scale-95"
+                                        >
+                                            Continue Learning
+                                        </button>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     )}
@@ -465,7 +494,7 @@ const Dashboard = () => {
                         <h3 className="font-semibold text-white mb-4 text-sm">Rating Progression</h3>
                         <div className="h-[150px] w-full mb-4">
                             <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={ratingData}>
+                                <LineChart data={ratingProgressionData}>
                                     <Tooltip
                                         contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '10px' }}
                                     />
@@ -501,16 +530,37 @@ const Dashboard = () => {
                         )}
                     </div>
 
-                    {/* Pro Ad / Tip */}
-                    <div className="bg-gradient-to-b from-slate-900 to-slate-950 border border-white/5 rounded-3xl p-6 text-center">
-                        <div className="w-12 h-12 rounded-2xl bg-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center mx-auto mb-4">
-                            <Target size={24} />
+                    {/* Weekly Goal */}
+                    <div className="bg-gradient-to-br from-slate-900 to-slate-950 border border-white/5 rounded-3xl p-6 relative overflow-hidden group">
+                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-400/20 transition-all" />
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <h4 className="text-white font-semibold text-sm">Weekly Goal</h4>
+                                <p className="text-xs text-slate-400 mt-1">Solve 20 problems</p>
+                            </div>
+                            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
+                                <Target size={20} />
+                            </div>
                         </div>
-                        <h4 className="text-white font-semibold mb-2">Upgrade to Pro</h4>
-                        <p className="text-xs text-slate-400 mb-6">Get detailed company-wise analysis and predicted rating changes.</p>
-                        <button className="w-full py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-xs font-bold text-white">
-                            Unlock Features
-                        </button>
+                        
+                        <div className="space-y-2 mt-6">
+                            <div className="flex justify-between text-[10px] text-slate-300 font-medium">
+                                <span>
+                                    {chartData.reduce((acc, curr) => acc + curr.solves, 0)} solved
+                                </span>
+                                <span>20 target</span>
+                            </div>
+                            <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                                <div 
+                                    className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full transition-all duration-1000"
+                                    style={{ width: `${Math.min(100, (chartData.reduce((acc, curr) => acc + curr.solves, 0) / 20) * 100)}%` }}
+                                />
+                            </div>
+                        </div>
+                        
+                        <p className="text-[10px] text-slate-500 mt-5 text-center italic">
+                            Consistency is key. Keep up the momentum!
+                        </p>
                     </div>
                 </div>
             </div>

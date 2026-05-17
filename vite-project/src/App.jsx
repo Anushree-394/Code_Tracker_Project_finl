@@ -21,10 +21,11 @@ import RapidFire from './components/dashboard/RapidFire'
 import LiveInterview from './components/dashboard/LiveInterview'
 import AptitudeQuiz from './components/dashboard/AptitudeQuiz'
 
-import Settings from './components/dashboard/Settings'
 import Notifications from './components/dashboard/Notifications'
 import ResumeAnalytics from './components/dashboard/ResumeAnalytics'
 import Roadmap from './components/dashboard/Roadmap'
+import Help from './components/dashboard/Help'
+
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
@@ -353,10 +354,10 @@ function App() {
           <Route path="resources/aptitude" element={<Resources category="Aptitude" />} />
           <Route path="resources/aptitude/:domain" element={<AptitudeQuiz />} />
           <Route path="resources/companies" element={<Resources category="Companies" />} />
-          <Route path="settings" element={<Settings />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="analytics" element={<ResumeAnalytics />} />
           <Route path="roadmap" element={<Roadmap />} />
+          <Route path="help" element={<Help />} />
         </Route>
       </Routes>
     </Router>

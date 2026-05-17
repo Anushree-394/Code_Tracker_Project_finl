@@ -120,47 +120,62 @@ router.post('/evaluate-answer', async (req, res) => {
 router.post('/generate-rapid-fire-questions', async (req, res) => {
     const { topic, difficulty, count } = req.body;
 
-    try {
-        const prompt = `Generate ${count} Multiple Choice Questions (MCQs) for a "Rapid Fire" interview round.
-        Topic: ${topic}
-        Requested Difficulty: ${difficulty}
-        
-        Difficulty Guidelines:
-        1. If Difficulty is "Adaptive":
-           - First 30% of questions should be EASY (Fundamentals).
-           - Next 40% should be MEDIUM (Implementation).
-           - Final 30% should be HARD (Internals/Architecture).
-        2. Strict Level Definitions:
-           - EASY: Basic definitions, acronyms, core syntax.
-           - MEDIUM: Implementation details, complexity analysis, standard algorithms.
-           - HARD: Advanced architectural patterns, deep internal workings (kernel, engine internals), rare edge cases, complex optimizations.
-        
-        Requirements:
-        1. Each question must have exactly 4 options.
-        2. Provide the index of the correct answer (0-3).
-        3. The questions should be concise and suitable for a 10-second timer.
-        4. Return the result as a JSON object with a key "questions" containing an array of objects.`;
+    let retries = 3;
+    while (retries > 0) {
+        try {
+            const prompt = `Generate ${count} Multiple Choice Questions (MCQs) for a "Rapid Fire" interview round.
+            Topic: ${topic}
+            Requested Difficulty: ${difficulty}
+            
+            Difficulty Guidelines:
+            1. If Difficulty is "Adaptive":
+               - First 30% of questions should be EASY (Fundamentals).
+               - Next 40% should be MEDIUM (Implementation).
+               - Final 30% should be HARD (Internals/Architecture).
+            2. Strict Level Definitions:
+               - EASY: Basic definitions, acronyms, core syntax.
+               - MEDIUM: Implementation details, complexity analysis, standard algorithms.
+               - HARD: Advanced architectural patterns, deep internal workings, rare edge cases, complex optimizations.
+            
+            Requirements:
+            1. Each question must have exactly 4 options.
+            2. The questions should be concise and suitable for a 10-second timer.
+            3. CRITICAL: You MUST return the result in EXACTLY the following JSON structure. Do NOT include any trailing commas, malformed quotes, or invalid JSON syntax.
+            {
+                "questions": [
+                    {
+                        "question": "What is...?",
+                        "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+                        "correct": 2
+                    }
+                ]
+            }
+            4. The "correct" key MUST be an integer between 0 and 3 representing the index of the correct option in the options array.`;
 
-        const chatCompletion = await groq.chat.completions.create({
-            messages: [
-                {
-                    role: "system",
-                    content: "You are a technical quiz generator that returns high-quality MCQs in JSON format."
-                },
-                {
-                    role: "user",
-                    content: prompt
-                }
-            ],
-            model: "llama-3.3-70b-versatile",
-            response_format: { type: "json_object" }
-        });
+            const chatCompletion = await groq.chat.completions.create({
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are a highly precise technical quiz generator. You ALWAYS output flawless, strictly valid JSON without syntax errors."
+                    },
+                    {
+                        role: "user",
+                        content: prompt
+                    }
+                ],
+                model: "llama-3.3-70b-versatile",
+                response_format: { type: "json_object" }
+            });
 
-        const data = JSON.parse(chatCompletion.choices[0].message.content);
-        res.json(data);
-    } catch (err) {
-        console.error('Groq Quiz Error:', err.message);
-        res.status(500).json({ error: 'Failed to generate quiz', details: err.message });
+            const data = JSON.parse(chatCompletion.choices[0].message.content);
+            return res.json(data);
+        } catch (err) {
+            console.error(`Groq Quiz Error (Retries left: ${retries - 1}):`, err.message);
+            retries--;
+            if (retries === 0) {
+                return res.status(500).json({ error: 'Failed to generate quiz after multiple attempts', details: err.message });
+            }
+        }
     }
 });
 
