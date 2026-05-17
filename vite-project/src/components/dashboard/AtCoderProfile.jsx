@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../../config';
+import { auth } from '../../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import {
     Trophy,
     Calendar,
@@ -30,13 +32,14 @@ const AtCoderProfile = () => {
     const [stats, setStats] = useState(null);
 
     useEffect(() => {
-        const loadSavedProfile = async () => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (!currentUser) return;
             try {
-                const res = await fetch(`${API_BASE_URL}/api/profile`);
+                const res = await fetch(`${API_BASE_URL}/api/profile/${currentUser.uid}`);
                 if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.length > 0 && data[0].atcoder) {
-                        const savedUrl = data[0].atcoder;
+                    const profile = await res.json();
+                    if (profile && profile.atcoder) {
+                        const savedUrl = profile.atcoder;
                         // Simple extraction for AtCoder username
                         const parts = savedUrl.split('/');
                         const cleanParts = parts.filter(p => p !== '');
@@ -48,8 +51,8 @@ const AtCoderProfile = () => {
             } catch (err) {
                 console.error('Error loading saved profile:', err);
             }
-        };
-        loadSavedProfile();
+        });
+        return () => unsubscribe();
     }, []);
 
     const fetchAtCoderData = async (user) => {

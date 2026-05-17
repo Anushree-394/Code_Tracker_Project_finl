@@ -191,6 +191,8 @@ const Dashboard = () => {
         { name: 'Sun', solves: 0 },
     ]);
     const [ratingProgressionData, setRatingProgressionData] = React.useState([{ name: 'Init', rating: 0 }]);
+    const [aiConfidenceScore, setAiConfidenceScore] = React.useState(15);
+    const [aiTrend, setAiTrend] = React.useState("Stable");
 
     const extractHandle = (url) => {
         if (!url) return '';
@@ -200,13 +202,31 @@ const Dashboard = () => {
     };
 
     React.useEffect(() => {
-        const fetchAllStats = async () => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (!currentUser) {
+                setTotalSolved(0);
+                setAvgRating(0);
+                setRecentSubmissions([]);
+                setChartData([
+                    { name: 'Mon', solves: 0 },
+                    { name: 'Tue', solves: 0 },
+                    { name: 'Wed', solves: 0 },
+                    { name: 'Thu', solves: 0 },
+                    { name: 'Fri', solves: 0 },
+                    { name: 'Sat', solves: 0 },
+                    { name: 'Sun', solves: 0 },
+                ]);
+                setRatingProgressionData([{ name: 'Init', rating: 0 }]);
+                setLoadingStats(false);
+                return;
+            }
+
             try {
-                const res = await fetch(`${API_BASE_URL}/api/profile`);
+                setLoadingStats(true);
+                const res = await fetch(`${API_BASE_URL}/api/profile/${currentUser.uid}`);
                 if (res.ok) {
-                    const profiles = await res.json();
-                    if (profiles && profiles.length > 0) {
-                        const profile = profiles[0];
+                    const profile = await res.json();
+                    if (profile) {
                         let solved = 0;
                         let ratings = [];
                         let allSubs = [];
@@ -355,9 +375,55 @@ const Dashboard = () => {
             } finally {
                 setLoadingStats(false);
             }
-        };
-        fetchAllStats();
+        });
+
+        return () => unsubscribe();
     }, []);
+
+    React.useEffect(() => {
+        // Calculate AI Confidence Score dynamically based on real-time performance metrics
+        // 1. Solved Problems Contribution: Up to 40% (1% for every 10 solved problems)
+        const solvedContribution = Math.min(40, totalSolved / 10);
+
+        // 2. Average Rating Contribution: Up to 35% (avgRating / 2500 * 35)
+        const ratingContribution = avgRating > 0 ? Math.min(35, (avgRating / 2500) * 35) : 0;
+
+        // 3. Roadmap Contribution: Up to 15% (5% per active roadmap)
+        const roadmapContribution = Math.min(15, activeRoadmaps.length * 5);
+
+        // 4. Resume Match Contribution: Up to 10% (matchScore / 100 * 10)
+        let resumeContribution = 0;
+        try {
+            const savedAnalysis = localStorage.getItem('resumeAnalysis');
+            if (savedAnalysis) {
+                const parsed = JSON.parse(savedAnalysis);
+                if (parsed && typeof parsed.matchScore === 'number') {
+                    resumeContribution = Math.min(10, (parsed.matchScore / 100) * 10);
+                }
+            }
+        } catch (e) {
+            console.error("Error parsing resume analysis in Dashboard:", e);
+        }
+
+        let calculatedScore = Math.round(solvedContribution + ratingContribution + roadmapContribution + resumeContribution);
+        
+        // Starting base score if completely empty
+        if (calculatedScore === 0) {
+            calculatedScore = 15;
+        }
+
+        // Realistic limits (10% to 99%)
+        calculatedScore = Math.max(10, Math.min(calculatedScore, 99));
+        setAiConfidenceScore(calculatedScore);
+
+        // Dynamic Trend Calculation
+        if (totalSolved > 0 || avgRating > 0 || activeRoadmaps.length > 0) {
+            const trendVal = Math.min(12, Math.floor(totalSolved / 25) + 1);
+            setAiTrend(`+${trendVal}%`);
+        } else {
+            setAiTrend("Stable");
+        }
+    }, [totalSolved, avgRating, activeRoadmaps]);
 
     return (
         <div className="min-h-screen bg-slate-950 text-slate-100 p-6 relative overflow-hidden">
@@ -408,7 +474,13 @@ const Dashboard = () => {
                     trend={avgRating > 0 ? "Live" : "0"} 
                     color="indigo" 
                 />
-                <StatCard title="AI Confidence Score" value="85%" icon={Sparkles} trend="+2%" color="amber" />
+                <StatCard 
+                    title="AI Confidence Score" 
+                    value={loadingStats ? "..." : `${aiConfidenceScore}%`} 
+                    icon={Sparkles} 
+                    trend={aiTrend} 
+                    color="amber" 
+                />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

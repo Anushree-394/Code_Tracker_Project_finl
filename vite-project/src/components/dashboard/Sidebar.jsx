@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../../config';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
-import { signOut } from 'firebase/auth';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 import {
     LayoutDashboard,
     Trophy,
@@ -141,13 +141,19 @@ const Sidebar = () => {
     };
 
     useEffect(() => {
-        const fetchAllData = async () => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (!currentUser) {
+                setProfileData(null);
+                setTotalSolved(0);
+                setLoading(false);
+                return;
+            }
+
             try {
-                const res = await fetch(`${API_BASE_URL}/api/profile`);
+                const res = await fetch(`${API_BASE_URL}/api/profile/${currentUser.uid}`);
                 if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.length > 0) {
-                        const profile = data[0];
+                    const profile = await res.json();
+                    if (profile) {
                         setProfileData(profile);
                         
                         let solved = 0;
@@ -194,8 +200,9 @@ const Sidebar = () => {
             } finally {
                 setLoading(false);
             }
-        };
-        fetchAllData();
+        });
+
+        return () => unsubscribe();
     }, []);
 
     const user = {

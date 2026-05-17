@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import API_BASE_URL from '../../config'
+import { auth } from '../../firebase'
+import { onAuthStateChanged } from 'firebase/auth'
 
 export default function CodeChefProfile() {
     const [handle, setHandle] = useState('')
@@ -9,20 +11,21 @@ export default function CodeChefProfile() {
     const [error, setError] = useState('')
 
     useEffect(() => {
-        const loadSavedProfile = async () => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (!currentUser) return;
             try {
-                const res = await fetch(`${API_BASE_URL}/api/profile`);
+                const res = await fetch(`${API_BASE_URL}/api/profile/${currentUser.uid}`);
                 if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.length > 0 && data[0].codechef) {
-                        fetchUserData(data[0].codechef);
+                    const profile = await res.json();
+                    if (profile && profile.codechef) {
+                        fetchUserData(profile.codechef);
                     }
                 }
             } catch (err) {
                 console.error('Error loading saved profile:', err);
             }
-        };
-        loadSavedProfile();
+        });
+        return () => unsubscribe();
     }, []);
 
     const extractHandle = (input) => {

@@ -1,13 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../../config';
 import { Bell, Calendar, AlertCircle, CheckCircle2, Clock, Zap } from 'lucide-react';
+import { auth } from '../../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const Notifications = () => {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [readIds, setReadIds] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem('read_notifications') || '[]');
+        } catch {
+            return [];
+        }
+    });
+    const [dismissedIds, setDismissedIds] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem('dismissed_notifications') || '[]');
+        } catch {
+            return [];
+        }
+    });
 
     useEffect(() => {
-        const fetchNotifications = async () => {
+        localStorage.setItem('read_notifications', JSON.stringify(readIds));
+    }, [readIds]);
+
+    useEffect(() => {
+        localStorage.setItem('dismissed_notifications', JSON.stringify(dismissedIds));
+    }, [dismissedIds]);
+
+    const handleDismiss = (id) => {
+        setDismissedIds(prev => [...prev, id]);
+    };
+
+    const handleMarkAllAsRead = () => {
+        const allIds = notifications.map(n => n.id);
+        setReadIds(prev => {
+            const uniqueIds = new Set([...prev, ...allIds]);
+            return Array.from(uniqueIds);
+        });
+    };
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (!currentUser) {
+                setNotifications([
+                    {
+                        id: 'no-user',
+                        type: 'info',
+                        title: 'Sign In Required',
+                        message: 'Sign in to sync your coding profiles and receive inactivity alerts.',
+                        time: 'TrackCode AI',
+                        icon: CheckCircle2,
+                        color: 'text-cyan-400',
+                        bgColor: 'bg-cyan-400/10'
+                    }
+                ]);
+                setLoading(false);
+                return;
+            }
+
             try {
                 setLoading(true);
                 const allNotifications = [];
@@ -39,11 +92,10 @@ const Notifications = () => {
                 }
 
                 // 2. Check Activity (Inactivity Reminders)
-                const profileRes = await fetch(`${API_BASE_URL}/api/profile`);
+                const profileRes = await fetch(`${API_BASE_URL}/api/profile/${currentUser.uid}`);
                 if (profileRes.ok) {
-                    const profiles = await profileRes.json();
-                    if (profiles && profiles.length > 0) {
-                        const profile = profiles[0];
+                    const profile = await profileRes.json();
+                    if (profile) {
                         const platforms = [
                             { name: 'LeetCode', url: profile.leetcode },
                             { name: 'Codeforces', url: profile.codeforces },
@@ -135,10 +187,12 @@ const Notifications = () => {
             } finally {
                 setLoading(false);
             }
-        };
+        });
 
-        fetchNotifications();
+        return () => unsubscribe();
     }, []);
+
+    const activeNotifications = notifications.filter(notif => !dismissedIds.includes(notif.id));
 
     return (
         <div className="min-h-screen bg-slate-950 p-6">
@@ -151,9 +205,14 @@ const Notifications = () => {
                         </h2>
                         <p className="text-slate-400 text-sm mt-1">Contest alerts and consistency reminders</p>
                     </div>
-                    <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-slate-300 hover:bg-white/10 transition-colors">
-                        Mark all as read
-                    </button>
+                    {activeNotifications.length > 0 && (
+                        <button 
+                            onClick={handleMarkAllAsRead}
+                            className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-slate-300 hover:bg-white/10 transition-colors"
+                        >
+                            Mark all as read
+                        </button>
+                    )}
                 </div>
 
                 {loading ? (
@@ -163,64 +222,95 @@ const Notifications = () => {
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {notifications.map((notif) => (
-                            <div key={notif.id} className="group relative overflow-hidden bg-white/5 border border-white/10 rounded-3xl p-6 hover:bg-white/[0.08] transition-all">
-                                <div className={`absolute top-0 left-0 w-1 h-full ${
-                                    notif.type === 'registration' ? 'bg-amber-400' :
-                                    notif.type === 'contest' ? 'bg-cyan-400' : 
-                                    notif.type === 'reminder' ? 'bg-fuchsia-500' : 
-                                    'bg-emerald-400'
-                                }`} />
-                                
-                                <div className="flex gap-6">
-                                    <div className={`w-14 h-14 rounded-2xl ${notif.bgColor} flex items-center justify-center flex-shrink-0`}>
-                                        <notif.icon className={notif.color} size={28} />
-                                    </div>
-                                    
-                                    <div className="flex-1">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <h3 className="font-semibold text-white group-hover:text-cyan-400 transition-colors">
-                                                {notif.title}
-                                            </h3>
-                                            <span className="text-[10px] text-slate-500 font-medium uppercase tracking-widest">
-                                                {notif.time}
-                                            </span>
-                                        </div>
-                                        <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                                            {notif.message}
-                                        </p>
+                        {activeNotifications.length > 0 ? (
+                            activeNotifications.map((notif) => {
+                                const isRead = readIds.includes(notif.id);
+                                return (
+                                    <div 
+                                        key={notif.id} 
+                                        className={`group relative overflow-hidden bg-white/5 border border-white/10 rounded-3xl p-6 transition-all ${
+                                            isRead ? 'opacity-55 hover:bg-white/[0.06]' : 'hover:bg-white/[0.08]'
+                                        }`}
+                                    >
+                                        <div className={`absolute top-0 left-0 w-1 h-full ${
+                                            isRead ? 'bg-slate-700/50' :
+                                            notif.type === 'registration' ? 'bg-amber-400' :
+                                            notif.type === 'contest' ? 'bg-cyan-400' : 
+                                            notif.type === 'reminder' ? 'bg-fuchsia-500' : 
+                                            'bg-emerald-400'
+                                        }`} />
                                         
-                                        <div className="flex items-center gap-3">
-                                            {notif.type === 'registration' && (
-                                                <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-400/10 border border-amber-400/20 text-[10px] font-bold text-amber-400 hover:bg-amber-400/20 transition-colors">
-                                                    <Zap size={12} />
-                                                    Register Now
-                                                </button>
-                                            )}
-                                            {notif.type === 'contest' && (
-                                                <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-400/10 border border-cyan-400/20 text-[10px] font-bold text-cyan-400 hover:bg-cyan-400/20 transition-colors">
-                                                    <Clock size={12} />
-                                                    Set Reminder
-                                                </button>
-                                            )}
-                                            {notif.type === 'reminder' && (
-                                                <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-fuchsia-500/10 border border-fuchsia-500/20 text-[10px] font-bold text-fuchsia-500 hover:bg-fuchsia-500/20 transition-colors">
-                                                    <Zap size={12} />
-                                                    Solve Now
-                                                </button>
-                                            )}
-                                            <button className="text-[10px] text-slate-500 hover:text-white transition-colors">
-                                                Dismiss
-                                            </button>
+                                        <div className="flex gap-6">
+                                            <div className={`w-14 h-14 rounded-2xl ${notif.bgColor} flex items-center justify-center flex-shrink-0`}>
+                                                <notif.icon className={notif.color} size={28} />
+                                            </div>
+                                            
+                                            <div className="flex-1">
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <h3 className="font-semibold text-white group-hover:text-cyan-400 transition-colors flex items-center gap-2">
+                                                        {notif.title}
+                                                        {!isRead && (
+                                                            <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" title="Unread" />
+                                                        )}
+                                                    </h3>
+                                                    <span className="text-[10px] text-slate-500 font-medium uppercase tracking-widest">
+                                                        {notif.time}
+                                                    </span>
+                                                </div>
+                                                <p className="text-slate-400 text-sm leading-relaxed mb-4">
+                                                    {notif.message}
+                                                </p>
+                                                
+                                                <div className="flex items-center gap-3">
+                                                    {notif.type === 'registration' && (
+                                                        <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-400/10 border border-amber-400/20 text-[10px] font-bold text-amber-400 hover:bg-amber-400/20 transition-colors">
+                                                            <Zap size={12} />
+                                                            Register Now
+                                                        </button>
+                                                    )}
+                                                    {notif.type === 'contest' && (
+                                                        <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-400/10 border border-cyan-400/20 text-[10px] font-bold text-cyan-400 hover:bg-cyan-400/20 transition-colors">
+                                                            <Clock size={12} />
+                                                            Set Reminder
+                                                        </button>
+                                                    )}
+                                                    {notif.type === 'reminder' && (
+                                                        <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-fuchsia-500/10 border border-fuchsia-500/20 text-[10px] font-bold text-fuchsia-500 hover:bg-fuchsia-500/20 transition-colors">
+                                                            <Zap size={12} />
+                                                            Solve Now
+                                                        </button>
+                                                    )}
+                                                    {!isRead && (
+                                                        <button 
+                                                            onClick={() => setReadIds(prev => [...prev, notif.id])}
+                                                            className="text-[10px] text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
+                                                        >
+                                                            Mark as read
+                                                        </button>
+                                                    )}
+                                                    <button 
+                                                        onClick={() => handleDismiss(notif.id)}
+                                                        className="text-[10px] text-slate-500 hover:text-white transition-colors"
+                                                    >
+                                                        Dismiss
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                );
+                            })
+                        ) : (
+                            <div className="text-center py-16 rounded-3xl border border-white/10 bg-white/5">
+                                <span className="text-4xl">🎉</span>
+                                <h3 className="mt-4 text-lg font-semibold text-white">All Caught Up!</h3>
+                                <p className="text-sm text-slate-400 mt-2">No new contest alerts or inactivity reminders at the moment.</p>
                             </div>
-                        ))}
+                        )}
                     </div>
                 )}
 
-                {!loading && notifications.length > 0 && (
+                {!loading && activeNotifications.length > 0 && (
                     <div className="mt-10 p-6 rounded-3xl bg-gradient-to-br from-fuchsia-500/10 to-cyan-400/10 border border-white/5 text-center">
                         <p className="text-xs text-slate-500 italic">
                             "Consistency is what transforms average into excellence."
