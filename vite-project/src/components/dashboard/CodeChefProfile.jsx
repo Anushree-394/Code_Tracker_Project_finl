@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import API_BASE_URL from '../../config'
 
 export default function CodeChefProfile() {
     const [handle, setHandle] = useState('')
@@ -10,7 +11,7 @@ export default function CodeChefProfile() {
     useEffect(() => {
         const loadSavedProfile = async () => {
             try {
-                const res = await fetch('http://localhost:5001/api/profile');
+                const res = await fetch(`${API_BASE_URL}/api/profile`);
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.length > 0 && data[0].codechef) {
@@ -43,7 +44,7 @@ export default function CodeChefProfile() {
         setHandle(userHandle)
 
         try {
-            const response = await fetch(`http://localhost:5001/api/codechef/${userHandle}`)
+            const response = await fetch(`${API_BASE_URL}/api/codechef/${userHandle}`)
 
             if (!response.ok) {
                 throw new Error('User not found or API error')

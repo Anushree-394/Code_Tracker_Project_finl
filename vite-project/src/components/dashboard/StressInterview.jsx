@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Brain, ArrowLeft, RefreshCw, Loader2, Mic, Square, Send, Terminal, Shield, Cpu, Activity, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../../config';
 
 const roles = [
     { id: 'sde', name: 'Software Development Engineer', icon: '💻', color: 'indigo' },
@@ -166,7 +167,7 @@ const StressInterview = () => {
         setError('');
         try {
             const roleName = roles.find(r => r.id === selectedRole)?.name || selectedRole;
-            const res = await fetch('http://localhost:5001/api/interview/generate-stress-questions', {
+            const res = await fetch(`${API_BASE_URL}/api/interview/generate-stress-questions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ role: roleName }),

@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import API_BASE_URL from '../../config';
 import { ReactSketchCanvas } from 'react-sketch-canvas';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,7 +36,7 @@ const LiveInterview = () => {
         console.log("Fetching new whiteboard problems from AI...");
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:5001/api/interview/generate-whiteboard-problem', {
+            const response = await fetch(`${API_BASE_URL}/api/interview/generate-whiteboard-problem`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ topic: 'Trees, Graphs, and System Design' })

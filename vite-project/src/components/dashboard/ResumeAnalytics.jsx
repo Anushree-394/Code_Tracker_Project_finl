@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_BASE_URL from '../../config';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Upload, 
@@ -48,7 +49,7 @@ const ResumeAnalytics = () => {
         formData.append('jobDescription', jobDescription);
 
         try {
-            const response = await fetch('http://localhost:5001/api/resume/analyze', {
+            const response = await fetch(`${API_BASE_URL}/api/resume/analyze`, {
                 method: 'POST',
                 body: formData,
             });

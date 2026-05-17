@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import API_BASE_URL from '../../config';
 import { useNavigate } from 'react-router-dom';
 import {
     Zap,
@@ -97,7 +98,7 @@ const RapidFire = () => {
     const startQuiz = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5001/api/interview/generate-rapid-fire-questions', {
+            const response = await fetch(`${API_BASE_URL}/api/interview/generate-rapid-fire-questions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

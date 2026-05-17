@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../../config';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Trophy, Target, AlertCircle, CheckCircle, ArrowLeft, Loader2, Star, MessageSquare, ShieldCheck, Activity, Brain } from 'lucide-react';
 
@@ -19,7 +20,7 @@ const InterviewFeedback = () => {
 
         const fetchFeedback = async () => {
             try {
-                const res = await fetch('http://localhost:5001/api/interview/evaluate-answer', {
+                const res = await fetch(`${API_BASE_URL}/api/interview/evaluate-answer`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ question, role, userAnswer })

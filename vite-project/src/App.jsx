@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react'
+import API_BASE_URL from './config'
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom'
 import { auth } from './firebase'
 import { onAuthStateChanged } from 'firebase/auth'
@@ -50,7 +51,7 @@ function App() {
     if (user?.uid) {
       const fetchProfile = async () => {
         try {
-          const res = await fetch(`http://localhost:5001/api/profile/${user.uid}`)
+          const res = await fetch(`${API_BASE_URL}/api/profile/${user.uid}`)
           if (res.ok) {
             const data = await res.json()
             setUserProfile(data || {})
@@ -69,7 +70,7 @@ function App() {
       if (user?.uid) {
         const fetchProfile = async () => {
           try {
-            const res = await fetch(`http://localhost:5001/api/profile/${user.uid}`)
+            const res = await fetch(`${API_BASE_URL}/api/profile/${user.uid}`)
             if (res.ok) {
               const data = await res.json()
               setUserProfile(data || {})
@@ -166,7 +167,7 @@ function App() {
 
           // Create basic profile in MongoDB
           try {
-            await fetch('http://localhost:5001/api/profile', {
+            await fetch(`${API_BASE_URL}/api/profile`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -184,7 +185,7 @@ function App() {
 
           // Send welcome email via backend
           try {
-            await fetch('http://localhost:5001/api/auth/welcome-email', {
+            await fetch(`${API_BASE_URL}/api/auth/welcome-email`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

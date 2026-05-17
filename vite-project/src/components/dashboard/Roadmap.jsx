@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../../config';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Target, 
@@ -58,7 +59,7 @@ const Roadmap = () => {
 
     const fetchSavedRoadmaps = async (userId) => {
         try {
-            const res = await fetch(`http://localhost:5001/api/roadmap/${userId}`);
+            const res = await fetch(`${API_BASE_URL}/api/roadmap/${userId}`);
             if (res.ok) {
                 const data = await res.json();
                 setSavedRoadmaps(data);
@@ -107,7 +108,7 @@ const Roadmap = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:5001/api/roadmap/generate', {
+            const response = await fetch(`${API_BASE_URL}/api/roadmap/generate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ goal, currentSkills, dailyTime, deadline, learningStyle, techStack, focusAreas })
@@ -147,7 +148,7 @@ const Roadmap = () => {
                 completedTasks: Array.from(completedTasks)
             };
 
-            const res = await fetch('http://localhost:5001/api/roadmap/save', {
+            const res = await fetch(`${API_BASE_URL}/api/roadmap/save`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -174,7 +175,7 @@ const Roadmap = () => {
         const missedTasksCount = allTasks.length - completedTasks.size;
 
         try {
-            const response = await fetch('http://localhost:5001/api/roadmap/adjust', {
+            const response = await fetch(`${API_BASE_URL}/api/roadmap/adjust`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -193,7 +194,7 @@ const Roadmap = () => {
 
             // If it's a saved roadmap, update it in DB
             if (activeRoadmapId) {
-                await fetch(`http://localhost:5001/api/roadmap/${activeRoadmapId}`, {
+                await fetch(`${API_BASE_URL}/api/roadmap/${activeRoadmapId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ roadmapData: data, completedTasks: [] })
@@ -218,7 +219,7 @@ const Roadmap = () => {
         // Auto-save progress if it's an active roadmap
         if (activeRoadmapId) {
             try {
-                await fetch(`http://localhost:5001/api/roadmap/${activeRoadmapId}`, {
+                await fetch(`${API_BASE_URL}/api/roadmap/${activeRoadmapId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ completedTasks: Array.from(newSet) })

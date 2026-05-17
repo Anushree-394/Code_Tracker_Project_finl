@@ -1,4 +1,5 @@
 import React from 'react';
+import API_BASE_URL from '../../config';
 import {
     TrendingUp,
     Users,
@@ -150,7 +151,7 @@ const Dashboard = () => {
     React.useEffect(() => {
         const fetchContestCount = async () => {
             try {
-                const response = await fetch('http://localhost:5001/api/contests/upcoming-summary');
+                const response = await fetch(`${API_BASE_URL}/api/contests/upcoming-summary`);
                 const data = await response.json();
                 setUpcomingContestCount(data.totalCount || 0);
                 setTopUpcomingContests(data.topContests || []);
@@ -164,7 +165,7 @@ const Dashboard = () => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 try {
-                    const res = await fetch(`http://localhost:5001/api/roadmap/${currentUser.uid}`);
+                    const res = await fetch(`${API_BASE_URL}/api/roadmap/${currentUser.uid}`);
                     if (res.ok) {
                         const data = await res.json();
                         setActiveRoadmaps(data);
@@ -201,7 +202,7 @@ const Dashboard = () => {
     React.useEffect(() => {
         const fetchAllStats = async () => {
             try {
-                const res = await fetch('http://localhost:5001/api/profile');
+                const res = await fetch(`${API_BASE_URL}/api/profile`);
                 if (res.ok) {
                     const profiles = await res.json();
                     if (profiles && profiles.length > 0) {
@@ -214,7 +215,7 @@ const Dashboard = () => {
                         if (profile.leetcode) {
                             try {
                                 const handle = profile.leetcode.includes('leetcode.com') ? extractHandle(profile.leetcode) : profile.leetcode;
-                                const resp = await fetch(`http://localhost:5001/api/leetcode/${handle}`);
+                                const resp = await fetch(`${API_BASE_URL}/api/leetcode/${handle}`);
                                 if (resp.ok) {
                                     const data = await resp.json();
                                     solved += data.matchedUser?.submitStats?.acSubmissionNum[0]?.count || 0;
@@ -291,7 +292,7 @@ const Dashboard = () => {
                         if (profile.atcoder) {
                             try {
                                 const handle = profile.atcoder.includes('atcoder.jp') ? extractHandle(profile.atcoder) : profile.atcoder;
-                                const resp = await fetch(`http://localhost:5001/api/atcoder/submissions/${handle}`);
+                                const resp = await fetch(`${API_BASE_URL}/api/atcoder/submissions/${handle}`);
                                 if (resp.ok) {
                                     const data = await resp.json();
                                     const solvedAtCoder = new Set(

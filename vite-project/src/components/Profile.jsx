@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import API_BASE_URL from '../config';
 import { Link, useNavigate } from 'react-router-dom'
 import { auth } from '../firebase'
 import { onAuthStateChanged } from 'firebase/auth'
+
 
 export default function Profile({ onBack }) {
   const navigate = useNavigate()
@@ -91,7 +92,7 @@ export default function Profile({ onBack }) {
     if (user?.uid) {
       const fetchProfile = async () => {
         try {
-          const res = await fetch(`http://localhost:5001/api/profile/${user.uid}`)
+          const res = await fetch(`${API_BASE_URL}/api/profile/${user.uid}`)
           if (res.ok) {
             const data = await res.json()
             if (data) {
@@ -134,7 +135,7 @@ export default function Profile({ onBack }) {
       }
 
       // For now, just save the profile without image upload
-      const response = await fetch('http://localhost:5001/api/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
