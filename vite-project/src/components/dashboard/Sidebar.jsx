@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../../config';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { signOut } from 'firebase/auth';
@@ -142,7 +143,7 @@ const Sidebar = () => {
     useEffect(() => {
         const fetchAllData = async () => {
             try {
-                const res = await fetch('http://localhost:5001/api/profile');
+                const res = await fetch(`${API_BASE_URL}/api/profile`);
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.length > 0) {
@@ -154,7 +155,7 @@ const Sidebar = () => {
                         if (profile.leetcode) {
                             try {
                                 const handle = extractHandle(profile.leetcode);
-                                const resp = await fetch(`http://localhost:5001/api/leetcode/${handle}`);
+                                const resp = await fetch(`${API_BASE_URL}/api/leetcode/${handle}`);
                                 if (resp.ok) {
                                     const d = await resp.json();
                                     solved += d.matchedUser?.submitStats?.acSubmissionNum[0]?.count || 0;
@@ -165,7 +166,7 @@ const Sidebar = () => {
                         if (profile.codechef) {
                             try {
                                 const handle = extractHandle(profile.codechef);
-                                const resp = await fetch(`http://localhost:5001/api/codechef/${handle}`);
+                                const resp = await fetch(`${API_BASE_URL}/api/codechef/${handle}`);
                                 if (resp.ok) {
                                     const d = await resp.json();
                                     solved += parseInt(d.solvedCount) || 0;
